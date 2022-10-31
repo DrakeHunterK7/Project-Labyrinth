@@ -28,7 +28,8 @@ public class InventoryItemController : MonoBehaviour
     public void putBack()
     {
         _playerTransform = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-        
+
+        if (_playerTransform == null || item == null) return;
         Instantiate(item.prefab, _playerTransform.position + _playerTransform.forward * 1.0f
         , Quaternion.identity);
     }
