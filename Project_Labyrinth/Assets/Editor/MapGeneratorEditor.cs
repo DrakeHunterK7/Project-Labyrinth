@@ -14,7 +14,7 @@ public class MapGeneratorEditor : Editor
 
         if(GUILayout.Button("Generate Map"))
         {
-            myTarget.GenerateRooms();
+            myTarget.CreateMap();
         }
         else if (GUILayout.Button("Clear Map"))
         {
