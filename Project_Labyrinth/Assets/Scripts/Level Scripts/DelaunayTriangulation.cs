@@ -1,4 +1,4 @@
-/* Adapted from https://github.com/Bl4ckb0ne/delaunay-triangulation
+/* Modified version from https://github.com/Bl4ckb0ne/delaunay-triangulation
 
 Copyright (c) 2015-2019 Simon Zeni (simonzeni@gmail.com)
 
@@ -26,7 +26,6 @@ THE SOFTWARE.*/
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-//using Graphs;
 using UnityEngine.UIElements;
 
 public class Delaunay2D

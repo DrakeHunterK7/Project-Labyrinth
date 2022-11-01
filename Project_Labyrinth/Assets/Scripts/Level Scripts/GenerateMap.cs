@@ -119,7 +119,7 @@ public class GenerateMap : MonoBehaviour
             if (canAdd)
             {
                 rooms.Add(tempRoom);
-                spawnRoom(tempRoom.bounds.position, tempRoom.bounds.size);
+                spawnRoom(tempRoom.bounds.center, tempRoom.bounds.size);
 
                 roomsSpawned++;
             }
@@ -157,7 +157,7 @@ public class GenerateMap : MonoBehaviour
 
     }
 
-    void spawnRoom(Vector2Int position, Vector2Int size)
+    void spawnRoom(Vector2 position, Vector2Int size)
     {
         GameObject room;
         
@@ -186,7 +186,6 @@ public class GenerateMap : MonoBehaviour
         myLine.transform.position = start;
         myLine.AddComponent<LineRenderer>();
         LineRenderer lr = myLine.GetComponent<LineRenderer>();
-        //lr.material = new Material();
         lr.SetColors(color, color);
         lr.SetWidth(0.1f, 0.1f);
         lr.SetPosition(0, start);
