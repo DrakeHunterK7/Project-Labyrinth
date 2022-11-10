@@ -7,7 +7,7 @@ public class EnemyFov : MonoBehaviour
 {
     public Transform player;
     public float maxangle;
-    public float maxradius;
+    private float maxradius = 75f;
     private bool isinFOV = false;
     private NavMeshAgent agent;
 
@@ -24,9 +24,12 @@ public class EnemyFov : MonoBehaviour
         isinFOV = inFOV(transform, player, maxangle, maxradius);
 
         if (isinFOV)
+        //if(true)
         {
             agent.SetDestination(player.position);
-        }
+            if (Vector3.Distance(player.position, this.transform.position) < 10f)
+                Destroy(player.gameObject);
+        };
     }
 
     private void OnDrawGizmos()
