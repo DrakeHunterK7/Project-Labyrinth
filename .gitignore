@@ -9,6 +9,8 @@ Project_Labyrinth/[Bb]uild/
 Project_Labyrinth/[Bb]uilds/
 Project_Labyrinth/[Ll]ogs/
 Project_Labyrinth/[Mm]emoryCaptures/
+Project_Labyrinth/.idea
+Project_Labyrinth/.vscode
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
@@ -58,3 +60,4 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+Project_Labyrinth/UserSettings/Layouts/default-2021.dwlt
