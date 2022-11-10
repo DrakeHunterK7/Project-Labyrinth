@@ -6,7 +6,7 @@ public class ItemPickup : MonoBehaviour
 {
     public Item Item;
 
-    void Pickup()
+    public void Pickup()
     {
         //Debug.Log(GameObject.FindGameObjectWithTag("Inventory").activeSelf);
         bool active = false;
@@ -21,7 +21,7 @@ public class ItemPickup : MonoBehaviour
         
     }
 
-    private void OnMouseDown(){
-        Pickup();   
-    }
+    //private void OnMouseDown(){
+    //    Pickup();   
+    //}
 }
