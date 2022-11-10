@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyFov : MonoBehaviour
 {
@@ -8,18 +9,24 @@ public class EnemyFov : MonoBehaviour
     public float maxangle;
     public float maxradius;
     private bool isinFOV = false;
+    private NavMeshAgent agent;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        agent = transform.GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
     void Update()
     {
         isinFOV = inFOV(transform, player, maxangle, maxradius);
+
+        if (isinFOV)
+        {
+            agent.SetDestination(player.position);
+        }
     }
 
     private void OnDrawGizmos()
