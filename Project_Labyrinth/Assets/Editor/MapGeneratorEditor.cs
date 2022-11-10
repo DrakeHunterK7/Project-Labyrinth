@@ -18,7 +18,12 @@ public class MapGeneratorEditor : Editor
         }
         else if (GUILayout.Button("Clear Map"))
         {
-            myTarget.ClearRooms();
+            myTarget.ClearMap();
         }
+        else if(GUILayout.Button("Enable Triangulation"))
+        {
+            myTarget.EnableTriangulation();
+        }
+
     }
 }

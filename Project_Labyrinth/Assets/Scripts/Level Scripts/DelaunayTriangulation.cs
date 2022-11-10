@@ -108,68 +108,13 @@ public class Delaunay2D
         }
     }
 
-    public class Edge
-    {
-        public Vector2 U { get; set; }
-        public Vector2 V { get; set; }
-        public bool IsBad { get; set; }
-
-        public Edge()
-        {
-
-        }
-
-        public Edge(Vector2 u, Vector2 v)
-        {
-            U = u;
-            V = v;
-        }
-
-        public static bool operator ==(Edge left, Edge right)
-        {
-            return (left.U == right.U || left.U == right.V)
-                && (left.V == right.U || left.V == right.V);
-        }
-
-        public static bool operator !=(Edge left, Edge right)
-        {
-            return !(left == right);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Edge e)
-            {
-                return this == e;
-            }
-
-            return false;
-        }
-
-        public bool Equals(Edge e)
-        {
-            return this == e;
-        }
-
-        public override int GetHashCode()
-        {
-            return U.GetHashCode() ^ V.GetHashCode();
-        }
-
-        public static bool AlmostEqual(Edge left, Edge right)
-        {
-            return Delaunay2D.AlmostEqual(left.U, right.U) && Delaunay2D.AlmostEqual(left.V, right.V)
-                || Delaunay2D.AlmostEqual(left.U, right.V) && Delaunay2D.AlmostEqual(left.V, right.U);
-        }
-    }
-
-    static bool AlmostEqual(float x, float y)
+    public static bool AlmostEqual(float x, float y)
     {
         return Mathf.Abs(x - y) <= float.Epsilon * Mathf.Abs(x + y) * 2
             || Mathf.Abs(x - y) < float.MinValue;
     }
 
-    static bool AlmostEqual(Vector2 left, Vector2 right)
+    public static bool AlmostEqual(Vector2 left, Vector2 right)
     {
         return AlmostEqual(left.x, right.x) && AlmostEqual(left.y, right.y);
     }
@@ -195,6 +140,7 @@ public class Delaunay2D
 
     void Triangulate()
     {
+        // Set min max for vertices
         float minX = Vertices[0].x;
         float minY = Vertices[0].y;
         float maxX = minX;
@@ -218,6 +164,7 @@ public class Delaunay2D
 
         Triangles.Add(new Triangle(p1, p2, p3));
 
+        // Check each of the circumcircles
         foreach (var Vector2 in Vertices)
         {
             List<Edge> polygon = new List<Edge>();
@@ -255,10 +202,12 @@ public class Delaunay2D
             }
         }
 
+        // Romove triangles that contain the vertice that is inside of the circumcircle
         Triangles.RemoveAll((Triangle t) => t.ContainsVector2(p1) || t.ContainsVector2(p2) || t.ContainsVector2(p3));
 
         HashSet<Edge> edgeSet = new HashSet<Edge>();
 
+        // Add edges for those which make up the triangulation edge set
         foreach (var t in Triangles)
         {
             var ab = new Edge(t.A, t.B);
