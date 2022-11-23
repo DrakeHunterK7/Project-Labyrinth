@@ -5,8 +5,11 @@ using UnityEngine;
 public class ItemPickup : MonoBehaviour
 {
     public Item Item;
+    private int i;
 
-    public void Pickup()
+    public static bool refeshAdd = false;
+
+    void Pickup()
     {
         //Debug.Log(GameObject.FindGameObjectWithTag("Inventory").activeSelf);
         bool active = false;
@@ -21,7 +24,8 @@ public class ItemPickup : MonoBehaviour
         
     }
 
-    //private void OnMouseDown(){
-    //    Pickup();   
-    //}
+    private void OnMouseDown(){
+        Pickup();   
+        refeshAdd = true;
+    }
 }
