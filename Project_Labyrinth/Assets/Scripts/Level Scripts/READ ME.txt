@@ -1,0 +1,24 @@
+IMPORTANT INFORMATION REGARDING MAP GENERATION
+
+-- Scaling
+
+In order to make things easy to generate we are going to be treating each cell within the grid as 5 meters
+
+This means that a 5 x 3 unit grid in world space will act as a 25m x 15m room
+This means that hallways, by default, will be 5m x 5m rooms each.
+
+This is is we can make sure that map generation runs smoothly, since it will be a massive pain in the ass to 
+rewrite it to accomidate for resizing and fitting multiple cells into different dimensions.
+
+Therefore, going forward when placing items it will be important to resize them in comparison to the player character.
+
+I'll be talking to Anas on how about going through with this but for now while testing I'll simply be making the player roughly
+1.8m tall, or 0.36 times the size of a single hallway for testing purposes.
+
+Will update this document if anything has changed going forward.
+
+-- IMPORTANT
+
+Each room prefab must have a collider and rigidbody component
+
+This will make sure that they properly check for collision when placing the rooms down

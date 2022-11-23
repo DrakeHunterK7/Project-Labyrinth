@@ -33,53 +33,37 @@ public class GenerateMap : MonoBehaviour
         Hallway
     }
 
+    bool triangulationOn = false;
 
-    class Room
-    {
-        public RectInt bounds;
-
-        
-
-        public Room(Vector2 position, Vector2Int size)
-        {
-            bounds = new RectInt(new Vector2Int((int) position.x, (int) position.y), size);
-
-        }
-
-        // Used for intial generation of rooms
-        public bool Colliding()
-        {
-            if(Physics.OverlapBoxNonAlloc(new Vector3(bounds.center.x, 1, bounds.center.y), new Vector3(bounds.size.x, 1, bounds.size.y), new Collider[1]) > 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-    };
+    // Grid Related
+    Vector2Int gridSize;
 
 
+    [SerializeField]
+    Vector2Int gridDimensions;
+
+    // Room Related
     [SerializeField]
     public int numberOfRooms;
 
-    [SerializeField]
-    GameObject roomPrefab;
+    int roomsAdded;
 
-    [SerializeField]
-    Vector2Int gridSize;
+    bool startingRoomAdded;
 
-    [SerializeField]
-    Vector2Int roomSizeRange;
 
+    // other
     [SerializeField]
     float PrimEdgeCycleChance;
 
+    // Room Prefabs
     [SerializeField]
-    Material hallWayMat;
+    List<GameObject> roomPrefabs;
 
     [SerializeField]
-    Material roomMat;
+    List<GameObject> hallwayPrefabs;
 
+
+    // Map Instance Variables
     Grid<CellType> grid;
     List<Room> rooms;
     Delaunay2D delaunay2D;
@@ -89,8 +73,6 @@ public class GenerateMap : MonoBehaviour
 
     HashSet<Edge> mapEdges;
 
-    bool triangulationOn = false;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -99,15 +81,7 @@ public class GenerateMap : MonoBehaviour
 
     public void CreateMap()
     {
-        rooms = new List<Room>();
-
-        grid = new Grid<CellType>(gridSize, Vector2Int.zero);
-
-        Random.InitState((int)System.DateTime.Now.Ticks);
-
-        // 
-        ClearRooms();
-        ClearLines();
+        resetMap();
 
         // Steps in creating the map
         SpawnRooms();
@@ -121,31 +95,32 @@ public class GenerateMap : MonoBehaviour
     // from a .Json
     void SpawnRooms()
     {
-        int roomsSpawned = 0;
+        Vector2Int roomPos;
+        roomsAdded = 0;
 
-        while(roomsSpawned < numberOfRooms)
+
+        // This code is to spawn the random rooms
+        while(roomsAdded < numberOfRooms)
         {
-
             // Get Room positions
-            Vector2Int roomPos = new Vector2Int(
+            roomPos = new Vector2Int(
                 Random.Range(1, gridSize.x - 1),
                 Random.Range(1, gridSize.y - 1));
 
-            // Get Room Sizes
-            Vector2Int roomSize = new Vector2Int(
-                Random.Range(roomSizeRange.x, roomSizeRange.y),
-                Random.Range(roomSizeRange.x, roomSizeRange.y));
+            // Set Room type
+            GameObject roomToSpawn = GetRoomType();
 
             bool canAdd = true;
 
-            Room tempRoom = new Room(roomPos, roomSize);
-            Room bufferRoom = new Room(roomPos + new Vector2Int(-1, -1), roomSize + new Vector2Int(2, 2));
+            // Create buffer and room to be added if buffer goes through
+            Room tempRoom = new Room(roomToSpawn, roomPos);
+            Room bufferRoom = tempRoom.CloneBuffer(new Vector2Int(-1, -1), new Vector2Int(2, 2));
 
             // if Colliding with an existing room do not add
             if (bufferRoom.Colliding())
             {
                 canAdd = false;
-                //Debug.Log("Collision has Occured");
+                Debug.Log("COLLIDING");
             }
 
 
@@ -154,23 +129,12 @@ public class GenerateMap : MonoBehaviour
                 || tempRoom.bounds.yMin < 0 || tempRoom.bounds.yMax >= gridSize.y)
             {
                 canAdd = false;
-                //Debug.Log("Room out of bounds");
             }
 
            // If conditions are met then add then add to collection of rooms
             if (canAdd)
             {
-                rooms.Add(tempRoom);
-                spawnRoom(tempRoom.bounds.center, tempRoom.bounds.size);
-
-                roomsSpawned++;
-
-                // Updates the grid with positions that are considered to be
-                // inside of a room.
-                foreach(var pos in tempRoom.bounds.allPositionsWithin)
-                {
-                    grid[pos] = CellType.Room;
-                }
+                addRoom(tempRoom);
             }
         }
     }
@@ -237,25 +201,21 @@ public class GenerateMap : MonoBehaviour
     {
         A_Star_Pathfinding aStar = new A_Star_Pathfinding(gridSize);
 
+        List<List<Vector2Int>> hallwayPaths = new List<List<Vector2Int>>();
+
         foreach (var edge in mapEdges)
         {
+            // Get starting rooms
             Room startRoom = new Room(edge.U, Vector2Int.one);
             Room endRoom = new Room(edge.V, Vector2Int.one);
 
             var startPosf = startRoom.bounds.center;
             var endPosf = endRoom.bounds.center;
 
-            //Debug.Log("startPosf: " + startPosf);
-            //Debug.Log("endPosf: " + endPosf);
-
-            // Starting position of hall
+            // Start and end position of path
             var startPos = new Vector2Int((int)startPosf.x, (int)startPosf.y);
             var endPos = new Vector2Int((int)endPosf.x, (int)endPosf.y);
 
-            Debug.Log("startPos: " + startPos);
-            Debug.Log("endPos: " + endPos);
-
-            //Fine up to here
 
             var path = aStar.FindPath(startPos, endPos, (A_Star_Pathfinding.Node a, A_Star_Pathfinding.Node b) => {
                 var pathCost = new A_Star_Pathfinding.PathCost();
@@ -282,6 +242,9 @@ public class GenerateMap : MonoBehaviour
                 return pathCost;
             });
 
+            // Add the created path to our list of paths
+            hallwayPaths.Add(path);
+
             if (path != null)
             {
                 for (int i = 0; i < path.Count; i++)
@@ -300,41 +263,163 @@ public class GenerateMap : MonoBehaviour
                         var delta = current - prev;
                     }
                 }
+            }
+        }
 
-                foreach (var pos in path)
+        // Re iterates through each path to determine which type of hallway node
+        // each position on the grid will be
+        foreach(List<Vector2Int> path in hallwayPaths)
+        {
+            foreach (var pos in path)
+            {
+                if (grid[pos] == CellType.Hallway)
                 {
-                    if (grid[pos] == CellType.Hallway)
-                    {
-                        spawnHallway(pos + new Vector2(0.5f,0.5f));
-                    }
+                    spawnHallway(pos);
                 }
             }
+        }
+        
+    }
+
+    // Adds room to list of rooms and then spawns room in world space
+    void addRoom(Room roomToAdd)
+    {
+        // Adds room to list of rooms
+        rooms.Add(roomToAdd);
+
+        // Spawns room in game space
+        spawnRoom(roomToAdd.bounds.center, roomToAdd.bounds.size, roomToAdd.getRoomPrefab());
+
+        roomsAdded++;
+
+        // Updates the grid with positions that are considered to be
+        // inside of a room.
+        foreach (var pos in roomToAdd.bounds.allPositionsWithin)
+        {
+            grid[pos] = CellType.Room;
+        }
+    }
+
+    // This function will need to be more complicated and
+    // apply randomness into its runtime
+    // in order to spawn all of the different types of rooms
+    GameObject GetRoomType()
+    {
+        // Will account for every room besides the starting room
+        int roomIndex = Random.Range(1, roomPrefabs.Count);
+
+        Debug.Log("" + roomIndex);
+
+        if(!startingRoomAdded)
+        {
+            startingRoomAdded = true;
+
+            return roomPrefabs[0];
+        }
+        else
+        {
+            return roomPrefabs[roomIndex];
         }
     }
 
     // This will spawn each individual room
-    // TODO: Will need to change to work with prefabs of rooms but that's work for later -- Nick
-    void spawnRoom(Vector2 position, Vector2Int size)
+    void spawnRoom(Vector2 position, Vector2Int size, GameObject room_type)
     {
         GameObject room;
         
-        room = Instantiate(roomPrefab, new Vector3(position.x, 0, position.y), Quaternion.identity);
-        room.GetComponent<Transform>().localScale = new Vector3(size.x, 1, size.y);
-
-        room.GetComponent<MeshRenderer>().material = roomMat;
+        room = Instantiate(room_type, new Vector3(position.x, 0, position.y), Quaternion.identity);
 
         room.transform.parent = parentRoom.transform;
     }
 
     // Spawns the hallways between the rooms
-    void spawnHallway(Vector2 position)
+    // Need to change to actually spawn hallways
+    void spawnHallway(Vector2Int grid_position)
     {
         GameObject hall;
+        GameObject hallwayType;
 
-        hall = Instantiate(roomPrefab, new Vector3(position.x, 0, position.y), Quaternion.identity);
-        hall.GetComponent<Transform>().localScale = new Vector3(1, 1, 1);
+        float rotationAngle = 0.0f;
 
-        hall.GetComponent<MeshRenderer>().material = hallWayMat;
+        bool north = grid[grid_position.x + 1, grid_position.y] == CellType.Hallway;
+        bool south = grid[grid_position.x - 1, grid_position.y] == CellType.Hallway;
+        bool east = grid[grid_position.x, grid_position.y - 1] == CellType.Hallway;
+        bool west = grid[grid_position.x, grid_position.y + 1] == CellType.Hallway;
+
+        // WILL NEED TO APPLY ROTATIONS TO THE MESHES TO REPRESNT THEIR FACING -- Nick
+
+        // I am really not proud of this please look away
+        if (west && east && north && south)
+        {
+            // Empty Hallway prefab
+            hallwayType =  hallwayPrefabs[4];
+        }
+        else if (west && south && east)
+        {
+            //top single wall
+            hallwayType =  hallwayPrefabs[3];
+            rotationAngle = 90.0f;
+        }
+        else if (west && east && north)
+        {
+            //bottom single wall
+            rotationAngle = 270.0f;
+            hallwayType =  hallwayPrefabs[3];
+        }
+        else if (south && east && north)
+        {
+            // Left Single wall
+            // no rotation
+            hallwayType =  hallwayPrefabs[3];
+        }
+        else if (west && south && north)
+        {
+            // Right Single wall
+            hallwayType =  hallwayPrefabs[3];
+            rotationAngle = 180.0f;
+        }
+        else if (west && east)
+        {
+            // left to right parallel walls
+            hallwayType = hallwayPrefabs[2];
+            rotationAngle = 90.0f;
+        }
+        else if (south && north)
+        {
+            // down to up parallel walls
+            hallwayType = hallwayPrefabs[2];
+        }
+        else if (south && east)
+        {
+            // corner one
+            // no rotation
+            hallwayType = hallwayPrefabs[1];
+        }
+        else if (west && south)
+        {
+            // corner two
+            hallwayType = hallwayPrefabs[1];
+            rotationAngle = 90.0f;
+        }
+        else if (west && north)
+        {
+            // corner three
+            hallwayType = hallwayPrefabs[1];
+            rotationAngle = 180.0f;
+        }
+        else if (east && north)
+        {
+            // corner two
+            hallwayType = hallwayPrefabs[1];
+            rotationAngle = 270.0f;
+        }
+        else
+        {
+            hallwayType = hallwayPrefabs[0];
+        }
+
+        hall = Instantiate(hallwayType, new Vector3(grid_position.x + 0.5f, 0, grid_position.y + 0.5f), Quaternion.identity);
+        hall.transform.RotateAround(hall.transform.position, new Vector3(0,1,0), rotationAngle);
 
         hall.transform.parent = parentRoom.transform;
     }
@@ -410,4 +495,20 @@ public class GenerateMap : MonoBehaviour
             triangulationOn = false;
         }
     }
+
+    // Function that resets all variables for each map generation
+    void resetMap()
+    {
+        startingRoomAdded = false;
+        gridSize = gridDimensions;
+        rooms = new List<Room>();
+        grid = new Grid<CellType>(gridSize, Vector2Int.zero);
+
+        Random.InitState((int)System.DateTime.Now.Ticks);
+
+        // resets map per generation
+        ClearRooms();
+        ClearLines();
+    }
+
 }
