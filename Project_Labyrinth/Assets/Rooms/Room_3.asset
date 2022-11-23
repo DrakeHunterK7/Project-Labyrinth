@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ddbdf62121946446800238567217365, type: 3}
   m_Name: Room_3
   m_EditorClassIdentifier: 
-  dimensions: {x: 4, y: 4}
+  dimensions: {x: 3, y: 3}
   roomName: Room_3
+  relativeEntrancePos:
+  - {x: 1, y: 3}
+  - {x: 3, y: 1}

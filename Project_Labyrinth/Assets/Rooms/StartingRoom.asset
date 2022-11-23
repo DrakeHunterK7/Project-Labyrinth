@@ -14,3 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dimensions: {x: 3, y: 3}
   roomName: Starting_Room
+  relativeEntrancePos:
+  - {x: -1, y: 1}
+  - {x: 1, y: -1}
+  - {x: 1, y: 3}
+  - {x: 3, y: 1}
