@@ -18,6 +18,11 @@ public class ToolKitManager : MonoBehaviour
     public int capacity = 9;
     private int itemCount = 0;
 
+    void Start()
+    {
+        ToolKitContent = GameObject.FindWithTag("Toolkit").GetComponent<RectTransform>();
+    }
+
     // Update is called once per frame
     void Update()
     {

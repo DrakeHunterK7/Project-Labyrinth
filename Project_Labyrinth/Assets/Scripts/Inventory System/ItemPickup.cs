@@ -9,7 +9,7 @@ public class ItemPickup : MonoBehaviour
 
     public static bool refeshAdd = false;
 
-    void Pickup()
+    public void Pickup()
     {
         //Debug.Log(GameObject.FindGameObjectWithTag("Inventory").activeSelf);
         bool active = false;
@@ -24,7 +24,7 @@ public class ItemPickup : MonoBehaviour
         
     }
 
-    private void OnMouseDown(){
+    public void PickupItem(){
         Pickup();   
         refeshAdd = true;
     }
