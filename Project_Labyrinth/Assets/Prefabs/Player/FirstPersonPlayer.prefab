@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Items: []
+  toolkit: {fileID: 5107523406768012414}
   ItemContent: {fileID: 0}
   InventoryItem: {fileID: 6242409108754658038, guid: 51c25160649f046a9a3571b609512bb8, type: 3}
   EnableRemove: {fileID: 0}
@@ -119,6 +120,7 @@ MonoBehaviour:
   mainCam: {fileID: 460784499022216934}
   camLeftLean: {fileID: 5983172104974321948}
   camRightLean: {fileID: 7181998195923960663}
+  Inventory: {fileID: 5107523406768012414}
   playerModel: {fileID: 0}
   crouchHeadBobAmount: 8
   crouchHeadBobSpeed: 0.025
@@ -334,6 +336,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Items: []
+  ItemImages: []
   ToolKitContent: {fileID: 0}
   ItemContent: {fileID: 0}
   InventoryItem: {fileID: 6242409108754658038, guid: 51c25160649f046a9a3571b609512bb8, type: 3}

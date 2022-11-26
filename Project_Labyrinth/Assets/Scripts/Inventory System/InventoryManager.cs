@@ -9,6 +9,8 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager instance;
     public List<Item> Items = new List<Item>();
 
+    public ToolKitManager toolkit;
+
     public Transform ItemContent;
     public GameObject InventoryItem;
 
@@ -23,7 +25,11 @@ public class InventoryManager : MonoBehaviour
 
     public void Add(Item item)
     {
-        Items.Add(item);
+        if (Items.Count < toolkit.capacity)
+        {
+            Items.Add(item);
+            toolkit.AddToToolkit(item);
+        }
     }
 
     public void Remove(Item item)

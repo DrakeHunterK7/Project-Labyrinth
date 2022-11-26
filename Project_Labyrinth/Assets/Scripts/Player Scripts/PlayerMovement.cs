@@ -17,6 +17,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] public GameObject camLeftLean;
     [SerializeField] public GameObject camRightLean;
     
+    [SerializeField] public ToolKitManager Inventory;
+    private int InventoryIndex = 0;
+
+    private Item selectedItem;
+    
     [SerializeField] private GameObject playerModel;
 
     private float camXRotation;
@@ -102,6 +107,8 @@ public class PlayerMovement : MonoBehaviour
             controller.Move(((move * activeSpeed) + (gravity)) * Time.deltaTime);
             
             HeadBobHandler(move);
+            
+            InventoryScrolling();
 
         }
         
@@ -161,21 +168,76 @@ public class PlayerMovement : MonoBehaviour
             PlayerLean(-1);
         else
         {
-            cameraInitialPosition = mainCam.transform.position;
-            isPlayerLeaning = false;
+            if (isPlayerLeaning)
+            {
+                mainCam.transform.position = Vector3.SmoothDamp(mainCam.transform.position, cameraInitialPosition, ref velocity, 0.1f);
+
+                if (Vector3.Distance(mainCam.transform.position, cameraInitialPosition) < 0.25f)
+                {
+                    isPlayerLeaning = false;
+                }
+            }
+            else
+            {
+                cameraInitialRotation = mainCam.transform.rotation;
+                cameraInitialPosition = mainCam.transform.position;
+            }
         }
-
     }
 
-    private void LateUpdate()
+    void InventoryScrolling()
     {
+        var scroll = Input.mouseScrollDelta;
+        var scrollValue = scroll.y;
         
+        if(selectedItem != null)
+            Debug.Log(selectedItem.name);
+
+        if (scroll.y != 0)
+        {
+            if (Inventory.Items.Count == 0) return;
+            
+            if (selectedItem == null)
+            {
+                selectedItem = Inventory.Items[InventoryIndex];
+                var image = Inventory.ItemImages[InventoryIndex];
+                image.color = Color.yellow;
+            }
+            else
+            {
+                if (InventoryIndex + (int) scrollValue == Inventory.Items.Count)
+                {
+                    var image = Inventory.ItemImages[InventoryIndex];
+                    image.color = Color.grey;
+                    InventoryIndex = 0;
+                    selectedItem = Inventory.Items[InventoryIndex];
+                    image = Inventory.ItemImages[InventoryIndex];
+                    image.color = Color.yellow;
+                }
+                else if (InventoryIndex + (int) scrollValue < 0)
+                {
+                    var image = Inventory.ItemImages[InventoryIndex];
+                    image.color = Color.grey;
+                    InventoryIndex = Inventory.Items.Count - 1;
+                    selectedItem = Inventory.Items[InventoryIndex];
+                    image = Inventory.ItemImages[InventoryIndex];
+                    image.color = Color.yellow;
+                }
+                else
+                {
+                    var image = Inventory.ItemImages[InventoryIndex];
+                    image.color = Color.grey;
+                    InventoryIndex += (int) scrollValue;
+                    selectedItem = Inventory.Items[InventoryIndex];
+                    image = Inventory.ItemImages[InventoryIndex];
+                    image.color = Color.yellow;
+                }
+            }
+        }
     }
-
-
+    
     void FPSRay()
     {
-        Debug.Log(itemBox_transform.position);
         RaycastHit hit;
         if (Physics.Raycast(mainCam.transform.position, mainCam.transform.forward, out hit, FPSRayRange))
         {
@@ -231,7 +293,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (hoveredPickup != null)
         {
-            hoveredPickup.PickupItem();
+            if(Inventory.Items.Count <= Inventory.capacity)
+                hoveredPickup.PickupItem();
         }
     }
 
@@ -242,12 +305,6 @@ public class PlayerMovement : MonoBehaviour
             isPlayerLeaning = true;
             var newPosition = cameraInitialPosition + direction * mainCam.transform.right * 2f;
             mainCam.transform.position = Vector3.SmoothDamp(mainCam.transform.position, newPosition, ref velocity, 0.1f);
-
-            var newRotation = Quaternion.Euler(mainCam.transform.rotation.x, mainCam.transform.rotation.y,
-                mainCam.transform.rotation.z - direction*10f);
-            mainCam.transform.rotation = Quaternion.Slerp(mainCam.transform.rotation, 
-                newRotation, 
-                20f * Time.deltaTime);
         }
     }
 
