@@ -240,7 +240,7 @@ public class GenerateMap : MonoBehaviour
                 }
                 else if (grid[b.Position] == CellType.Room)
                 {
-                    pathCost.cost += 10;
+                    pathCost.cost += 20;
                 }
 
 
@@ -275,17 +275,29 @@ public class GenerateMap : MonoBehaviour
 
         // Re iterates through each path to determine which type of hallway node
         // each position on the grid will be
-        foreach(List<Vector2Int> path in hallwayPaths)
+        HashSet<Vector2Int> uniqueHallways = new HashSet<Vector2Int>();
+
+        // Creates a set of uni
+        foreach (List<Vector2Int> path in hallwayPaths)
         {
             foreach (var pos in path)
             {
-                if (grid[pos] == CellType.Hallway)
-                {
-                    spawnHallway(pos);
-                }
+                uniqueHallways.Add(pos);
+            }
+            
+        }
+
+        foreach(Vector2Int hallway in uniqueHallways)
+        {
+            Debug.Log(hallway);
+            if (grid[hallway] == CellType.Hallway)
+            {
+                //Debug.Log(hallway);
+                spawnHallway(hallway);
             }
         }
         
+
     }
 
     // NEED TO DO MY WORK HERE -- NICK
@@ -356,12 +368,32 @@ public class GenerateMap : MonoBehaviour
 
         float rotationAngle = 0.0f;
 
+        bool north= false;
+        bool south = false;
+        bool east = false;
+        bool west = false;
+/*
         bool north = grid[grid_position.x + 1, grid_position.y] == CellType.Hallway || grid[grid_position.x + 1, grid_position.y] == CellType.Room;
         bool south = grid[grid_position.x - 1, grid_position.y] == CellType.Hallway || grid[grid_position.x - 1, grid_position.y] == CellType.Room;
-        bool east = grid[grid_position.x, grid_position.y - 1] == CellType.Hallway || grid[grid_position.x, grid_position.y - 1] == CellType.Room;
         bool west = grid[grid_position.x, grid_position.y + 1] == CellType.Hallway || grid[grid_position.x, grid_position.y + 1] == CellType.Room;
+        bool east = grid[grid_position.x, grid_position.y - 1] == CellType.Hallway || grid[grid_position.x, grid_position.y - 1] == CellType.Room;*/
 
-        // WILL NEED TO APPLY ROTATIONS TO THE MESHES TO REPRESNT THEIR FACING -- Nick
+        if (grid_position.x < gridSize.x - 1)
+        {
+            north = grid[grid_position.x + 1, grid_position.y] == CellType.Hallway || grid[grid_position.x + 1, grid_position.y] == CellType.Room;
+        }
+        if(grid_position.x > 0)
+        {
+            south = grid[grid_position.x - 1, grid_position.y] == CellType.Hallway || grid[grid_position.x - 1, grid_position.y] == CellType.Room;
+        }
+        if(grid_position.y < gridSize.y - 1)
+        {
+            west = grid[grid_position.x, grid_position.y + 1] == CellType.Hallway || grid[grid_position.x, grid_position.y + 1] == CellType.Room;
+        }
+        if(grid_position.y > 0)
+        {
+            east = grid[grid_position.x, grid_position.y - 1] == CellType.Hallway || grid[grid_position.x, grid_position.y - 1] == CellType.Room;
+        }
 
         // I am really not proud of this please look away
         if (west && east && north && south)
