@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Unity.VisualScripting;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -15,26 +16,55 @@ public class InventoryManager : MonoBehaviour
     public GameObject InventoryItem;
 
     public Toggle EnableRemove;
-
     public InventoryItemController[] InventoryItems;
+    
+    private int InventoryIndex = 0;
+    public Item selectedItem;
+
+    public int capacity;
+
+    [SerializeField] public PlayerMovement player;
 
     private void Awake()
     {
         instance = this;
     }
 
-    public void Add(Item item)
+    void Update()
+    {
+        InventoryScrolling();
+    }
+
+    public bool Add(Item item)
     {
         if (Items.Count < toolkit.capacity)
         {
             Items.Add(item);
             toolkit.AddToToolkit(item);
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
     public void Remove(Item item)
     {
         Items.Remove(item);
+        toolkit.RemoveFromToolkit(InventoryIndex);
+        selectedItem = null;
+        if (InventoryIndex == 0)
+        {
+            if (Items.Count != 0)
+                InventoryIndex = Items.Count - 1;
+            
+        }
+        else
+        {
+            InventoryIndex--;
+        }
+        
     }
 
     public void ListItems()
@@ -69,22 +99,67 @@ public class InventoryManager : MonoBehaviour
 
         SetInventoryItems();
     }
-
-    public void EnableItemsRemove()
+    
+    private void InventoryScrolling()
     {
-        if(EnableRemove.isOn)
+        var scroll = Input.mouseScrollDelta;
+        var scrollValue = scroll.y;
+
+        if (scroll.y != 0)
         {
-            foreach (Transform item in ItemContent)
+            if (Items.Count == 0) return;
+            
+            if (selectedItem == null && (InventoryIndex < Items.Count && InventoryIndex >= 0))
             {
-                item.Find("RemoveItem").gameObject.SetActive(true);
+                selectedItem = Items[InventoryIndex];
+                var image = toolkit.ItemImages[InventoryIndex];
+                image.color = Color.yellow;
+            }
+            else
+            {
+                if (InventoryIndex + (int) scrollValue == Items.Count)
+                {
+                    var image = toolkit.ItemImages[InventoryIndex];
+                    image.color = Color.grey;
+                    InventoryIndex = 0;
+                    selectedItem = toolkit.Items[InventoryIndex];
+                    image = toolkit.ItemImages[InventoryIndex];
+                    image.color = Color.yellow;
+                }
+                else if (InventoryIndex + (int) scrollValue < 0)
+                {
+                    var image = toolkit.ItemImages[InventoryIndex];
+                    image.color = Color.grey;
+                    InventoryIndex = toolkit.Items.Count - 1;
+                    selectedItem = toolkit.Items[InventoryIndex];
+                    image = toolkit.ItemImages[InventoryIndex];
+                    image.color = Color.yellow;
+                }
+                else if (InventoryIndex < Items.Count && InventoryIndex >= 0)
+                {
+                    var image = toolkit.ItemImages[InventoryIndex];
+                    image.color = Color.grey;
+                    InventoryIndex += (int) scrollValue;
+                    selectedItem = toolkit.Items[InventoryIndex];
+                    image = toolkit.ItemImages[InventoryIndex];
+                    image.color = Color.yellow;
+                }
             }
         }
-        else
+    }
+    
+    public void Use()
+    {
+        Debug.Log("Trying to use....");
+        switch (selectedItem.type)
         {
-            foreach (Transform item in ItemContent)
-            {
-                item.Find("RemoveItem").gameObject.SetActive(false);
-            }
+            case ItemType.Consumable:
+                Debug.Log("Used!");
+                Remove(selectedItem);
+                selectedItem = null;
+                break;
+            case ItemType.Equippable:
+                break;
         }
     }
 

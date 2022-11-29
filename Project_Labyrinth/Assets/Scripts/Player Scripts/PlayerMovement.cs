@@ -4,25 +4,28 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IDamageable
 {
     public CharacterController controller;
     
+    [Header("General Parameters")]
     [SerializeField] public Camera mainCam;
-    [SerializeField] public GameObject camLeftLean;
-    [SerializeField] public GameObject camRightLean;
-    
-    [SerializeField] public ToolKitManager Inventory;
-    private int InventoryIndex = 0;
+    [SerializeField] public InventoryManager inventoryManager;
+    [SerializeField] public Light collarLight;
 
     private Item selectedItem;
     
+    [Header("Player Model Parameters")]
     [SerializeField] private GameObject playerModel;
+
+    [Header("Player Parameters")] 
+    [SerializeField] public float health = 100f;
 
     private float camXRotation;
     private float camYRotation;
@@ -31,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isInvOpen = false;
 
+ 
     private float walkSpeed = 10f;
     private float sprintSpeed = 20f;
     private float crouchSpeed = 5f;
@@ -40,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isSprinting;
     private bool isCrouching;
 
-        [Header("HeadBob Parameters")]
+    [Header("HeadBob Parameters")]
     [SerializeField] private float crouchHeadBobAmount = 0.05f;
     [SerializeField] private float crouchHeadBobSpeed = 4f;
     [SerializeField] private float walkHeadBobAmount = 0.05f;
@@ -107,14 +111,16 @@ public class PlayerMovement : MonoBehaviour
             controller.Move(((move * activeSpeed) + (gravity)) * Time.deltaTime);
             
             HeadBobHandler(move);
-            
-            InventoryScrolling();
-
         }
         
         FPSRay();
+        UpdateCollarLight();
+        
         if(Input.GetKeyDown(KeyCode.Mouse1))
             PickupItem();
+        
+        if(Input.GetKeyDown(KeyCode.Mouse0))
+            UseItem();
         
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
@@ -159,9 +165,7 @@ public class PlayerMovement : MonoBehaviour
             isSprinting = false;
             isCrouching = true;
         }
-        
-        
-        
+
         if(Input.GetKey(KeyCode.E))
             PlayerLean(1);
         else if(Input.GetKey(KeyCode.Q))
@@ -184,56 +188,22 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-
-    void InventoryScrolling()
+    
+    public void Damage(float damage)
     {
-        var scroll = Input.mouseScrollDelta;
-        var scrollValue = scroll.y;
-        
-        if(selectedItem != null)
-            Debug.Log(selectedItem.name);
+        health -= damage;
+        if(health <= 0)
+            Death();
+    }
 
-        if (scroll.y != 0)
-        {
-            if (Inventory.Items.Count == 0) return;
-            
-            if (selectedItem == null)
-            {
-                selectedItem = Inventory.Items[InventoryIndex];
-                var image = Inventory.ItemImages[InventoryIndex];
-                image.color = Color.yellow;
-            }
-            else
-            {
-                if (InventoryIndex + (int) scrollValue == Inventory.Items.Count)
-                {
-                    var image = Inventory.ItemImages[InventoryIndex];
-                    image.color = Color.grey;
-                    InventoryIndex = 0;
-                    selectedItem = Inventory.Items[InventoryIndex];
-                    image = Inventory.ItemImages[InventoryIndex];
-                    image.color = Color.yellow;
-                }
-                else if (InventoryIndex + (int) scrollValue < 0)
-                {
-                    var image = Inventory.ItemImages[InventoryIndex];
-                    image.color = Color.grey;
-                    InventoryIndex = Inventory.Items.Count - 1;
-                    selectedItem = Inventory.Items[InventoryIndex];
-                    image = Inventory.ItemImages[InventoryIndex];
-                    image.color = Color.yellow;
-                }
-                else
-                {
-                    var image = Inventory.ItemImages[InventoryIndex];
-                    image.color = Color.grey;
-                    InventoryIndex += (int) scrollValue;
-                    selectedItem = Inventory.Items[InventoryIndex];
-                    image = Inventory.ItemImages[InventoryIndex];
-                    image.color = Color.yellow;
-                }
-            }
-        }
+    void Death()
+    {
+        
+    }
+
+    void UpdateCollarLight()
+    {
+        collarLight.color = Color.Lerp(Color.red, Color.white, health / 100f);
     }
     
     void FPSRay()
@@ -293,8 +263,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if (hoveredPickup != null)
         {
-            if(Inventory.Items.Count <= Inventory.capacity)
-                hoveredPickup.PickupItem();
+            if (inventoryManager.Add(hoveredPickup.Item))
+            {
+                Destroy(hoveredPickup.gameObject);
+            }
+                
+        }
+    }
+    
+    void UseItem()
+    {
+        if (inventoryManager.selectedItem != null)
+        {
+            inventoryManager.Use();
         }
     }
 
@@ -307,12 +288,5 @@ public class PlayerMovement : MonoBehaviour
             mainCam.transform.position = Vector3.SmoothDamp(mainCam.transform.position, newPosition, ref velocity, 0.1f);
         }
     }
-
-    void OpenInventory()
-    {
-        if (!isInvOpen)
-        {
-            isInvOpen = true;
-        }
-    }
+    
 }

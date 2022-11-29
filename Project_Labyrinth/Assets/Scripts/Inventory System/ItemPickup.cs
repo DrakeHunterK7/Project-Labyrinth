@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
@@ -21,8 +23,9 @@ public class ItemPickup : MonoBehaviour
             InventoryManager.instance.Add(Item);
             Destroy(gameObject);
         }
-        
     }
+    
+    
 
     public void PickupItem(){
         Pickup();   
