@@ -39,6 +39,8 @@ public class ToolKitManager : MonoBehaviour
         if(itemCount < capacity)
         {
             GameObject obj = Instantiate(InventoryItem, ToolKitContent);
+
+           
                     
             var itemName = obj.transform.Find("ItemName").GetComponent<Text>();
             var itemIcon = obj.transform.Find("ItemIcon").GetComponent<Image>();

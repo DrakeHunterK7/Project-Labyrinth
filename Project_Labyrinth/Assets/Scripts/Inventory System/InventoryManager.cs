@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using Unity.VisualScripting;
+using ColorUtility = UnityEngine.ColorUtility;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -41,12 +42,15 @@ public class InventoryManager : MonoBehaviour
         {
             Items.Add(item);
             toolkit.AddToToolkit(item);
+            MessageManager.instance.DisplayMessage("Picked up " + item.name);
             return true;
         }
         else
         {
             return false;
         }
+        
+        
     }
 
     public void Remove(Item item)
@@ -58,7 +62,6 @@ public class InventoryManager : MonoBehaviour
         {
             if (Items.Count != 0)
                 InventoryIndex = Items.Count - 1;
-            
         }
         else
         {
@@ -66,38 +69,26 @@ public class InventoryManager : MonoBehaviour
         }
         
     }
-
-    public void ListItems()
+    
+    public void Drop()
     {
-        //Freeze current scene:
-        Time.timeScale = 0;
+        Items.Remove(selectedItem);
+        toolkit.RemoveFromToolkit(InventoryIndex);
+        
+        var obj = Instantiate(selectedItem.prefab, player.rayHitLocation, Quaternion.identity);
 
-        //Debug.Log("inside listItem method");
-        foreach(Transform item in ItemContent)
+        selectedItem = null;
+        
+        if (InventoryIndex == 0)
         {
-            Destroy(item.gameObject);
+            if (Items.Count != 0)
+                InventoryIndex = Items.Count - 1;
+            
         }
-        //Debug.Log("second step");
-        foreach (var item in Items)
+        else
         {
-            GameObject obj = Instantiate(InventoryItem, ItemContent);
-            var itemName = obj.transform.Find("ItemName").GetComponent<Text>();
-            var itemIcon = obj.transform.Find("ItemIcon").GetComponent<Image>();
-            var removeButton = obj.transform.Find("RemoveItem").GetComponent<Button>();
-
-            //Debug.Log(itemName.text);
-            itemName.text = item.itemName;
-            //Debug.Log(item.itemName);
-            //Debug.Log(itemName.text);
-            itemIcon.sprite = item.icon;
-
-            if(EnableRemove.isOn)
-            {
-                removeButton.gameObject.SetActive(true);
-            }
+            InventoryIndex--;
         }
-
-        SetInventoryItems();
     }
     
     private void InventoryScrolling()
@@ -113,36 +104,36 @@ public class InventoryManager : MonoBehaviour
             {
                 selectedItem = Items[InventoryIndex];
                 var image = toolkit.ItemImages[InventoryIndex];
-                image.color = Color.yellow;
+                image.color = new Color(218/255f, 242/255f, 255/255f);
             }
             else
             {
-                if (InventoryIndex + (int) scrollValue == Items.Count)
+                if (InventoryIndex - (int) scrollValue == Items.Count)
                 {
                     var image = toolkit.ItemImages[InventoryIndex];
-                    image.color = Color.grey;
+                    image.color = new Color(85/255f, 111/255f, 123/255f);
                     InventoryIndex = 0;
                     selectedItem = toolkit.Items[InventoryIndex];
                     image = toolkit.ItemImages[InventoryIndex];
-                    image.color = Color.yellow;
+                    image.color = new Color(218/255f, 242/255f, 255/255f);
                 }
-                else if (InventoryIndex + (int) scrollValue < 0)
+                else if (InventoryIndex - (int) scrollValue < 0)
                 {
                     var image = toolkit.ItemImages[InventoryIndex];
-                    image.color = Color.grey;
+                    image.color = new Color(85/255f, 111/255f, 123/255f);
                     InventoryIndex = toolkit.Items.Count - 1;
                     selectedItem = toolkit.Items[InventoryIndex];
                     image = toolkit.ItemImages[InventoryIndex];
-                    image.color = Color.yellow;
+                    image.color = new Color(218/255f, 242/255f, 255/255f);
                 }
                 else if (InventoryIndex < Items.Count && InventoryIndex >= 0)
                 {
                     var image = toolkit.ItemImages[InventoryIndex];
-                    image.color = Color.grey;
-                    InventoryIndex += (int) scrollValue;
+                    image.color = new Color(85/255f, 111/255f, 123/255f);
+                    InventoryIndex -= (int) scrollValue;
                     selectedItem = toolkit.Items[InventoryIndex];
                     image = toolkit.ItemImages[InventoryIndex];
-                    image.color = Color.yellow;
+                    image.color = new Color(218/255f, 242/255f, 255/255f);
                 }
             }
         }
@@ -162,20 +153,4 @@ public class InventoryManager : MonoBehaviour
                 break;
         }
     }
-
-    public void SetInventoryItems()
-    {
-        InventoryItems = ItemContent.GetComponentsInChildren<InventoryItemController>();
-
-        for(var i = 0; i < Items.Count; i++)
-        {
-            InventoryItems[i].AddInventoryitem(Items[i]);
-        }
-    }
-
-    public void Unfreeze()
-    {
-        Time.timeScale = 1.0f;
-    }
-
 }

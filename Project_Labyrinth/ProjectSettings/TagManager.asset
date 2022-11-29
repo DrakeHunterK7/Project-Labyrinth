@@ -9,6 +9,7 @@ TagManager:
   - Crosshair
   - ItemUIBox
   - ItemUIText
+  - MessageBox
   layers:
   - Default
   - TransparentFX

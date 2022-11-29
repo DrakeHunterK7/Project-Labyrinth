@@ -56,6 +56,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private Vector3 cameraPosition;
     private Vector3 cameraInitialPosition;
     private Quaternion cameraInitialRotation;
+    public Vector3 rayHitLocation;
 
     private Vector3 velocity = Vector3.zero;
 
@@ -89,8 +90,8 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     {
         if (!isPlayerLeaning)
         {
-            float x = Input.GetAxis("Horizontal");
-            float y = Input.GetAxis("Vertical");
+            float x = (Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0);
+            float y = (Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0);
         
             float mouseX = Input.GetAxis("Mouse X");
             float mouseY = Input.GetAxis("Mouse Y");
@@ -107,8 +108,11 @@ public class PlayerMovement : MonoBehaviour, IDamageable
                 gravity += Physics.gravity;
             }
 
-            Vector3 move = Vector3.ClampMagnitude(mainCam.transform.forward * y + mainCam.transform.right * x, 1);
-            controller.Move(((move * activeSpeed) + (gravity)) * Time.deltaTime);
+            var forwardDirectionVector = mainCam.transform.forward;
+
+            Vector3 move = Vector3.ClampMagnitude(forwardDirectionVector * y + mainCam.transform.right * x, 1);
+            move.y = 0;
+            controller.Move(((move.normalized * activeSpeed) + (gravity)) * Time.deltaTime);
             
             HeadBobHandler(move);
         }
@@ -121,6 +125,9 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         
         if(Input.GetKeyDown(KeyCode.Mouse0))
             UseItem();
+        
+        if(Input.GetKeyDown(KeyCode.Mouse2))
+            DropItem();
         
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
@@ -203,7 +210,9 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     void UpdateCollarLight()
     {
+        health = Mathf.Abs(100f * Mathf.Sin(Time.time));
         collarLight.color = Color.Lerp(Color.red, Color.white, health / 100f);
+        collarLight.intensity = Mathf.Lerp(3.5f, 1, health/100f);
     }
     
     void FPSRay()
@@ -211,6 +220,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         RaycastHit hit;
         if (Physics.Raycast(mainCam.transform.position, mainCam.transform.forward, out hit, FPSRayRange))
         {
+            rayHitLocation = hit.point;
             hoveredPickup = hit.collider.gameObject.GetComponent<ItemPickup>();
             if (hoveredPickup != null)
             {
@@ -230,6 +240,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         }
         else
         {
+            rayHitLocation = mainCam.transform.position + mainCam.transform.forward * FPSRayRange;
             hoveredPickup = null;
             itemBox.transform.localScale = Vector2.zero;
             itemBox_text.text = "";
@@ -267,6 +278,10 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             {
                 Destroy(hoveredPickup.gameObject);
             }
+            else
+            {
+                MessageManager.instance.DisplayMessage("Inventory is Full!");
+            }
                 
         }
     }
@@ -276,6 +291,14 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         if (inventoryManager.selectedItem != null)
         {
             inventoryManager.Use();
+        }
+    }
+    
+    void DropItem()
+    {
+        if (inventoryManager.selectedItem != null)
+        {
+            inventoryManager.Drop();
         }
     }
 
