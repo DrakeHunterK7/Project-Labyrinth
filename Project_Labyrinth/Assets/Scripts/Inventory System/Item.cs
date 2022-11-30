@@ -18,7 +18,8 @@ public class Item : ScriptableObject
 public enum ItemType
 {
     Consumable, 
-    Equippable
+    Equippable,
+    TaskItem,
 }
 
 

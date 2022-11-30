@@ -25,10 +25,12 @@ public class MessageManager : MonoBehaviour
         messageBox = GameObject.FindWithTag("MessageBox");
     }
 
-    public void DisplayMessage(String message)
+    public void DisplayMessage(String message, Color textColor)
     {
         GameObject newMessage = Instantiate(messagePrefab, messageBox.transform);
-        newMessage.GetComponent<Text>().text = message;
+        var newMessageText = newMessage.GetComponent<Text>();
+        newMessageText.text = message;
+        newMessageText.color = textColor;
 
         if (messages.Count >= 6)
         {

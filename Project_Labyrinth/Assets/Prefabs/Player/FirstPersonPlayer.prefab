@@ -51,7 +51,7 @@ MonoBehaviour:
   EnableRemove: {fileID: 0}
   InventoryItems: []
   selectedItem: {fileID: 0}
-  capacity: 0
+  capacity: 9
   player: {fileID: 460784497338372643}
 --- !u!1 &460784497338372646
 GameObject:
@@ -64,6 +64,7 @@ GameObject:
   - component: {fileID: 460784497338372640}
   - component: {fileID: 460784497338372641}
   - component: {fileID: 460784497338372643}
+  - component: {fileID: 6246369875212649517}
   m_Layer: 0
   m_Name: FirstPersonPlayer
   m_TagString: Player
@@ -79,14 +80,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 460784497338372646}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.037818, y: 0.61631405, z: -11.1}
+  m_LocalPosition: {x: 0, y: 4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 460784499022216929}
   - {fileID: 904699171837741564}
   - {fileID: 5527376400048384425}
-  - {fileID: 684231526890149823}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -101,7 +101,7 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 7.52
+  m_Height: 8
   m_Radius: 0.6
   m_SlopeLimit: 45
   m_StepOffset: 0.3
@@ -121,17 +121,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 460784497338372641}
+  playerCollider: {fileID: 6246369875212649517}
   mainCam: {fileID: 460784499022216934}
   inventoryManager: {fileID: 17381260326044486}
   collarLight: {fileID: 6675290054781369047}
   playerModel: {fileID: 0}
-  health: 9.5
-  crouchHeadBobAmount: 8
-  crouchHeadBobSpeed: 0.025
-  walkHeadBobAmount: 100
-  walkHeadBobSpeed: 10
-  sprintHeadBobAmount: 18
-  sprintHeadBobSpeed: 0.11
+  health: 100
+  crouchHeadBobAmount: 0.05
+  crouchHeadBobSpeed: 4
+  walkHeadBobAmount: 0.1
+  walkHeadBobSpeed: 6
+  sprintHeadBobAmount: 0.3
+  sprintHeadBobSpeed: 15
+  rayHitLocation: {x: 0, y: 0, z: 0}
+--- !u!136 &6246369875212649517
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 460784497338372646}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.6
+  m_Height: 8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &460784499022216932
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,10 +175,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 460784499022216932}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.3000002, z: 0}
+  m_LocalPosition: {x: 0, y: 3.21, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 684231526890149823}
   m_Father: {fileID: 460784497338372640}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -256,12 +273,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7385137498850192686}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.3000002, z: 0}
+  m_LocalPosition: {x: 0, y: -0.74, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 460784497338372640}
-  m_RootOrder: 3
+  m_Father: {fileID: 460784499022216929}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!108 &6675290054781369047
 Light:
@@ -307,7 +324,7 @@ Light:
       e33: 1
     m_UseCullingMatrixOverride: 0
   m_Cookie: {fileID: 0}
-  m_DrawHalo: 1
+  m_DrawHalo: 0
   m_Flare: {fileID: 0}
   m_RenderMode: 0
   m_CullingMask:

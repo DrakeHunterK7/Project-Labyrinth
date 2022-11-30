@@ -19,7 +19,7 @@ public class InventoryManager : MonoBehaviour
     public Toggle EnableRemove;
     public InventoryItemController[] InventoryItems;
     
-    private int InventoryIndex = 0;
+    public int InventoryIndex = 0;
     public Item selectedItem;
 
     public int capacity;
@@ -42,7 +42,7 @@ public class InventoryManager : MonoBehaviour
         {
             Items.Add(item);
             toolkit.AddToToolkit(item);
-            MessageManager.instance.DisplayMessage("Picked up " + item.name);
+            MessageManager.instance.DisplayMessage("Picked up " + item.name, Color.cyan);
             return true;
         }
         else
@@ -55,24 +55,15 @@ public class InventoryManager : MonoBehaviour
 
     public void Remove(Item item)
     {
-        Items.Remove(item);
+        Items.RemoveAt(InventoryIndex);
         toolkit.RemoveFromToolkit(InventoryIndex);
         selectedItem = null;
-        if (InventoryIndex == 0)
-        {
-            if (Items.Count != 0)
-                InventoryIndex = Items.Count - 1;
-        }
-        else
-        {
-            InventoryIndex--;
-        }
-        
+      
     }
     
     public void Drop()
     {
-        Items.Remove(selectedItem);
+        Items.RemoveAt(InventoryIndex);
         toolkit.RemoveFromToolkit(InventoryIndex);
         
         var obj = Instantiate(selectedItem.prefab, player.rayHitLocation, Quaternion.identity);

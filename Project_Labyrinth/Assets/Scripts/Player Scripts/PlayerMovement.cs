@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Timers;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using UnityEngine.XR;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
@@ -13,6 +16,7 @@ using Vector3 = UnityEngine.Vector3;
 public class PlayerMovement : MonoBehaviour, IDamageable
 {
     public CharacterController controller;
+    public CapsuleCollider playerCollider;
     
     [Header("General Parameters")]
     [SerializeField] public Camera mainCam;
@@ -30,7 +34,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private float camXRotation;
     private float camYRotation;
     private float cameraSpeed = 2f;
-    private float FPSRayRange = 10f;
+    private float FPSRayRange = 15f;
 
     private bool isInvOpen = false;
 
@@ -38,6 +42,8 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private float walkSpeed = 10f;
     private float sprintSpeed = 20f;
     private float crouchSpeed = 5f;
+    private bool canCrouch = true;
+    private float crouchTime = 0.25f;
     private float activeSpeed;
 
     private bool isWalking;
@@ -88,22 +94,25 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
+        playerCollider.center = controller.center;
+        playerCollider.height = controller.height;
+
         if (!isPlayerLeaning)
         {
             float x = (Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0);
             float y = (Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0);
-        
+
             float mouseX = Input.GetAxis("Mouse X");
             float mouseY = Input.GetAxis("Mouse Y");
-        
-            camXRotation -= mouseY*cameraSpeed;
-            camYRotation += mouseX*cameraSpeed;
+
+            camXRotation -= mouseY * cameraSpeed;
+            camYRotation += mouseX * cameraSpeed;
             camXRotation = Mathf.Clamp(camXRotation, -90, 90);
 
             mainCam.transform.eulerAngles = new Vector3(camXRotation, camYRotation, 0f);
-            
+
             gravity = Vector3.zero;
-            if (controller.isGrounded == false)
+            if (controller.isGrounded == false && canCrouch)
             {
                 gravity += Physics.gravity;
             }
@@ -113,75 +122,76 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             Vector3 move = Vector3.ClampMagnitude(forwardDirectionVector * y + mainCam.transform.right * x, 1);
             move.y = 0;
             controller.Move(((move.normalized * activeSpeed) + (gravity)) * Time.deltaTime);
-            
+
             HeadBobHandler(move);
+            
+            if (Input.GetKeyDown(KeyCode.C) && canCrouch)
+            {
+                if (!isCrouching)
+                {
+                    isCrouching = true;
+                    isWalking = false;
+                    isSprinting = false;
+                    StartCoroutine(HandleCrouch());
+                }
+                else
+                {
+                    isCrouching = false;
+                    isWalking = true;
+                    StartCoroutine(HandleCrouch());
+                }
+            }
         }
-        
+
         FPSRay();
         UpdateCollarLight();
-        
-        if(Input.GetKeyDown(KeyCode.Mouse1))
+
+        if (Input.GetKeyDown(KeyCode.Mouse1))
             PickupItem();
-        
-        if(Input.GetKeyDown(KeyCode.Mouse0))
+
+        if (Input.GetKeyDown(KeyCode.Mouse0))
             UseItem();
-        
-        if(Input.GetKeyDown(KeyCode.Mouse2))
+
+        if (Input.GetKeyDown(KeyCode.Mouse2))
             DropItem();
-        
+
         if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            activeSpeed = sprintSpeed;
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            activeSpeed = walkSpeed;
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            if (!isCrouching)
-            {
-                controller.height = 3f;
-                activeSpeed = crouchSpeed; 
-            }
-            else
-            {
-                transform.position += new Vector3(0, 5f, 0f);
-                controller.height = 7f;
-                activeSpeed = walkSpeed;
-            }
-
-        }
-
-        if (activeSpeed == walkSpeed)
-        {
-            isWalking = true;
-            isSprinting = false;
-            isCrouching= false;
-        }
-        else if (activeSpeed == sprintSpeed)
         {
             isWalking = false;
             isSprinting = true;
             isCrouching = false;
         }
-        else if (activeSpeed == crouchSpeed)
+        else if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            isWalking = false;
+            isWalking = true;
             isSprinting = false;
-            isCrouching = true;
+            isCrouching = false;
         }
 
-        if(Input.GetKey(KeyCode.E))
+        
+
+        if (isCrouching)
+            activeSpeed = crouchSpeed;
+        else if (isWalking)
+            activeSpeed = walkSpeed;
+        else if (isSprinting)
+            activeSpeed = sprintSpeed;
+        else
+            activeSpeed = walkSpeed;
+
+
+
+
+        if (Input.GetKey(KeyCode.E))
             PlayerLean(1);
-        else if(Input.GetKey(KeyCode.Q))
+        else if (Input.GetKey(KeyCode.Q))
             PlayerLean(-1);
         else
         {
             if (isPlayerLeaning)
             {
-                mainCam.transform.position = Vector3.SmoothDamp(mainCam.transform.position, cameraInitialPosition, ref velocity, 0.1f);
+                mainCam.transform.position = Vector3.SmoothDamp(mainCam.transform.position, cameraInitialPosition,
+                    ref velocity, 0.1f);
 
                 if (Vector3.Distance(mainCam.transform.position, cameraInitialPosition) < 0.25f)
                 {
@@ -195,7 +205,46 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             }
         }
     }
+
+    private IEnumerator HandleCrouch()
     
+    {
+        canCrouch = false;
+
+        float currentCrouchTime = 0f;
+
+        float targetHeight = isCrouching ? 4f : 8f;
+        float currentHeight = controller.height;
+        Vector3 targetCenter = isCrouching ? new Vector3(0f, 1.5f, 0f) : new Vector3(0f, 0f, 0f);
+        Vector3 currentCenter = controller.center;
+        Vector3 currentPosition = transform.position;
+        Vector3 targetPosition = new Vector3(transform.position.x,
+            transform.position.y + (targetHeight - currentHeight), transform.position.z);
+
+        while (currentCrouchTime < crouchTime)
+        {
+            controller.height = Mathf.Lerp(currentHeight, targetHeight, currentCrouchTime / crouchTime);
+            controller.center = Vector3.Lerp(currentCenter, targetCenter, currentCrouchTime / crouchTime);
+            transform.position = Vector3.Lerp(currentPosition, targetPosition, currentCrouchTime / crouchTime);
+            currentCrouchTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        controller.height = targetHeight;
+        controller.center = targetCenter;
+        
+        canCrouch = true;
+    }
+
+    private void FixedUpdate()
+    {
+        
+
+        
+    }
+
+
     public void Damage(float damage)
     {
         health -= damage;
@@ -210,7 +259,6 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     void UpdateCollarLight()
     {
-        health = Mathf.Abs(100f * Mathf.Sin(Time.time));
         collarLight.color = Color.Lerp(Color.red, Color.white, health / 100f);
         collarLight.intensity = Mathf.Lerp(3.5f, 1, health/100f);
     }
@@ -250,7 +298,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     void HeadBobHandler(Vector3 moveVector)
     {
-
+        
         if (!controller.isGrounded) return;
         
         if (Mathf.Abs(moveVector.x) > 0.1f || Mathf.Abs(moveVector.z) > 0.1f)
@@ -280,7 +328,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             }
             else
             {
-                MessageManager.instance.DisplayMessage("Inventory is Full!");
+                MessageManager.instance.DisplayMessage("Inventory is Full!", Color.yellow);
             }
                 
         }
