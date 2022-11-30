@@ -8,7 +8,7 @@ public class Room
 
     private string roomType;
     GameObject roomPrefab;
-    Vector2Int position;
+    public Vector2 position;
     List<Vector2Int> entracePositions; // positions of the entrance(s) for a room
     List<bool> entranceChosen;
 
@@ -36,6 +36,8 @@ public class Room
         SetRoom(room);
         SetPosition(pos);
         SetEntrances(room, pos);
+
+        position = bounds.center;
     }
 
 
@@ -55,6 +57,7 @@ public class Room
     public void SetPosition(Vector2Int pos)
     {
         bounds.position = pos;
+        
     }
 
     // Returns a clone which is used to check for collisions 

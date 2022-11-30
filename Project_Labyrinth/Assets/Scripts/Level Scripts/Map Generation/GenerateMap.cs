@@ -22,9 +22,13 @@ SOFTWARE.*/
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor.AI;
 
 public class GenerateMap : MonoBehaviour
 {
+    public delegate void OnEventTrigger(int num);
+    public static OnEventTrigger trigger;
+
     // Cell type used to identify
     // if space is used for room, hallway, or empty space
     enum CellType{
@@ -36,12 +40,19 @@ public class GenerateMap : MonoBehaviour
 
     bool triangulationOn = false;
 
+    [SerializeField]
+    float mapSeed;
+
+    private int currentLevel;
+
     // Grid Related
     Vector2Int gridSize;
 
-
     [SerializeField]
     Vector2Int gridDimensions;
+
+    [SerializeField]
+    int worldScaleMultiplier;
 
     // Room Related
     [SerializeField]
@@ -50,11 +61,15 @@ public class GenerateMap : MonoBehaviour
     int roomsAdded;
 
     bool startingRoomAdded;
+    bool endingRoomAdded;
 
 
     // other
     [SerializeField]
     float PrimEdgeCycleChance;
+
+    [SerializeField]
+    GameObject testAIPrefab;
 
     // Room Prefabs
     [SerializeField]
@@ -74,7 +89,12 @@ public class GenerateMap : MonoBehaviour
 
     HashSet<Edge> mapEdges;
 
-    // Start is called before the first frame update
+
+    private void Awake()
+    {
+        trigger = ChangeLevel;
+    }
+
     void Start()
     {
         CreateMap();
@@ -89,6 +109,8 @@ public class GenerateMap : MonoBehaviour
         DalaunayTriangulation();
         Prims();
         Pathfinding();
+        OtherWork();
+
     }
 
 
@@ -104,7 +126,7 @@ public class GenerateMap : MonoBehaviour
         while(roomsAdded < numberOfRooms)
         {
             // Get Room positions
-            roomPos = new Vector2Int(
+                roomPos = new Vector2Int(
                 Random.Range(1, gridSize.x - 1),
                 Random.Range(1, gridSize.y - 1));
 
@@ -300,10 +322,30 @@ public class GenerateMap : MonoBehaviour
 
     }
 
-    // NEED TO DO MY WORK HERE -- NICK
+
+    // This is where all the setup that doesn't really have a label will go
+    void OtherWork()
+    {
+        // This will rescale all of the rooms and hallways to a certain size
+        GameObject _rooms = GameObject.Find("_rooms");
+
+        _rooms.isStatic = true;
+        _rooms.transform.localScale = new Vector3(worldScaleMultiplier, worldScaleMultiplier, worldScaleMultiplier);
+
+        // This Bakes a new NavMesh after the map is created
+        NavMeshBuilder.BuildNavMesh();
+
+        // TEST PLAYER
+        /*GameObject player;
+
+        player = Instantiate(testAIPrefab, new Vector3(rooms[0].position.x, 1.0f, rooms[0].position.y), Quaternion.identity);
+        player.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);*/
+    }
+
     // Adds room to list of rooms and then spawns room in world space
     void addRoom(Room roomToAdd)
     {
+
         // Adds room to list of rooms
         rooms.Add(roomToAdd);
 
@@ -333,7 +375,7 @@ public class GenerateMap : MonoBehaviour
     GameObject GetRoomType()
     {
         // Will account for every room besides the starting room
-        int roomIndex = Random.Range(1, roomPrefabs.Count);
+        int roomIndex = Random.Range(2, roomPrefabs.Count);
 
         Debug.Log("" + roomIndex);
 
@@ -342,6 +384,12 @@ public class GenerateMap : MonoBehaviour
             startingRoomAdded = true;
 
             return roomPrefabs[0];
+        }
+        else if(!endingRoomAdded)
+        {
+            endingRoomAdded = true;
+
+            return roomPrefabs[1];
         }
         else
         {
@@ -356,7 +404,9 @@ public class GenerateMap : MonoBehaviour
         
         room = Instantiate(room_type, new Vector3(position.x, 0, position.y), Quaternion.identity);
 
+        room.isStatic = true;
         room.transform.parent = parentRoom.transform;
+        
     }
 
     // Spawns the hallways between the rooms
@@ -372,11 +422,6 @@ public class GenerateMap : MonoBehaviour
         bool south = false;
         bool east = false;
         bool west = false;
-/*
-        bool north = grid[grid_position.x + 1, grid_position.y] == CellType.Hallway || grid[grid_position.x + 1, grid_position.y] == CellType.Room;
-        bool south = grid[grid_position.x - 1, grid_position.y] == CellType.Hallway || grid[grid_position.x - 1, grid_position.y] == CellType.Room;
-        bool west = grid[grid_position.x, grid_position.y + 1] == CellType.Hallway || grid[grid_position.x, grid_position.y + 1] == CellType.Room;
-        bool east = grid[grid_position.x, grid_position.y - 1] == CellType.Hallway || grid[grid_position.x, grid_position.y - 1] == CellType.Room;*/
 
         if (grid_position.x < gridSize.x - 1)
         {
@@ -468,7 +513,10 @@ public class GenerateMap : MonoBehaviour
         hall = Instantiate(hallwayType, new Vector3(grid_position.x + 0.5f, 0, grid_position.y + 0.5f), Quaternion.identity);
         hall.transform.RotateAround(hall.transform.position, new Vector3(0,1,0), rotationAngle);
 
+        hall.isStatic = true;
         hall.transform.parent = parentRoom.transform;
+
+        
     }
 
     // Small function to help clean up scene when generating rooms
@@ -482,6 +530,7 @@ public class GenerateMap : MonoBehaviour
         }
 
         parentRoom = new GameObject("_rooms");
+        parentRoom.AddComponent<NavigationBaker>();
 
     }
 
@@ -523,6 +572,16 @@ public class GenerateMap : MonoBehaviour
         parentLine = new GameObject("_lines");
     }
 
+    void ClearAI()
+    {
+        GameObject removeObject = GameObject.FindWithTag("AI");
+
+        if (removeObject != null)
+        {
+            DestroyImmediate(removeObject);
+        }
+    }
+
     public void ClearMap()
     {
         ClearRooms();
@@ -546,16 +605,29 @@ public class GenerateMap : MonoBehaviour
     // Function that resets all variables for each map generation
     void resetMap()
     {
+        // Removes the previously baked navmesh
+        NavMeshBuilder.ClearAllNavMeshes();
+
         startingRoomAdded = false;
+        endingRoomAdded = false;
+
         gridSize = gridDimensions;
         rooms = new List<Room>();
         grid = new Grid<CellType>(gridSize, Vector2Int.zero);
 
-        Random.InitState((int)System.DateTime.Now.Ticks);
+        // this is the seed setter
+        Random.InitState((int) mapSeed + currentLevel);
+
 
         // resets map per generation
         ClearRooms();
         ClearLines();
+        ClearAI();
+    }
+
+    void ChangeLevel(int levelNum)
+    {
+        currentLevel += levelNum;
     }
 
 }
