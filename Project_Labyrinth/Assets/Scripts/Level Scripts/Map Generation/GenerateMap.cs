@@ -23,6 +23,7 @@ SOFTWARE.*/
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.AI;
+using UnityEngine.SceneManagement;
 
 public class GenerateMap : MonoBehaviour
 {
@@ -44,6 +45,9 @@ public class GenerateMap : MonoBehaviour
     float mapSeed;
 
     private int currentLevel;
+
+    [SerializeField] public string nextScene;
+    [SerializeField] public string previousScene;
 
     // Grid Related
     Vector2Int gridSize;
@@ -628,6 +632,13 @@ public class GenerateMap : MonoBehaviour
     void ChangeLevel(int levelNum)
     {
         currentLevel += levelNum;
+        
+        if(levelNum < 0)
+            SceneManager.LoadScene(previousScene);
+        else
+        {
+            SceneManager.LoadScene(nextScene);
+        }
     }
 
 }
