@@ -24,8 +24,8 @@ public class EnemyFov : MonoBehaviour
     {
         isinFOV = inFOV(transform, player, maxangle, maxradius);
 
-        if (isinFOV)
-        //if(true)
+        //if (isinFOV)
+        if(true)
         {
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
@@ -61,8 +61,8 @@ public class EnemyFov : MonoBehaviour
 
     public static bool inFOV(Transform checkingObject, Transform target, float maxangle, float maxradius)
     {
-        Collider[] overlaps = new Collider[10];
-        int count = Physics.OverlapSphereNonAlloc(checkingObject.position, maxradius, overlaps);
+        Collider[] overlaps = new Collider[100];
+        Physics.OverlapSphereNonAlloc(checkingObject.position, maxradius, overlaps);
 
         foreach (Collider overlap in overlaps)
         {
@@ -74,7 +74,6 @@ public class EnemyFov : MonoBehaviour
                     directionbetween.y *= 0;
 
                     float angle = Vector3.Angle(checkingObject.forward, directionbetween);
-
                     if (angle <= maxangle)
                     {
                         Ray ray = new Ray(checkingObject.position, target.position - checkingObject.position);
@@ -82,8 +81,11 @@ public class EnemyFov : MonoBehaviour
 
                         if (Physics.Raycast(ray,out hit, maxradius))
                         {
-                            if (hit.transform == target)
+                            if (hit.collider.gameObject.CompareTag("Player"))
+                            {
                                 return true;
+                            }
+                                
                         }
                     }
                 }
