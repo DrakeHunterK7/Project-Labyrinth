@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Inventory
   - AI
+  - Toolkit
+  - Crosshair
+  - ItemUIBox
+  - ItemUIText
+  - MessageBox
   layers:
   - Default
   - TransparentFX
