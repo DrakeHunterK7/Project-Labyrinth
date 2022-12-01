@@ -3,98 +3,178 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Unity.VisualScripting;
+using ColorUtility = UnityEngine.ColorUtility;
+using System.Linq;
+using Inventory_System;
 
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
     public List<Item> Items = new List<Item>();
 
-    public Transform ItemContent;
-    public GameObject InventoryItem;
+    public ToolKitManager toolkit;
 
-    public Toggle EnableRemove;
+    public int InventoryIndex = 0;
+    public Item selectedItem;
 
-    public InventoryItemController[] InventoryItems;
+    public int capacity;
+
+    [SerializeField] public PlayerMovement player;
 
     private void Awake()
     {
         instance = this;
     }
 
-    public void Add(Item item)
+    void Update()
     {
-        Items.Add(item);
+        InventoryScrolling();
+    }
+
+    public bool Add(Item item)
+    {
+        if (Items.Count < toolkit.capacity)
+        {
+            Items.Add(item);
+            toolkit.AddToToolkit(item);
+
+            item.script = item.prefab.GetComponent<ItemController>();
+            item.script.Item = item;
+            
+            MessageManager.instance.DisplayMessage("Picked up " + item.name, Color.cyan);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        
+        
     }
 
     public void Remove(Item item)
     {
-        Items.Remove(item);
-    }
-
-    public void ListItems()
-    {
-        //Freeze current scene:
-        Time.timeScale = 0;
-
-        //Debug.Log("inside listItem method");
-        foreach(Transform item in ItemContent)
+        Items.RemoveAt(InventoryIndex);
+        toolkit.RemoveFromToolkit(InventoryIndex);
+        selectedItem = null;
+        
+        if (InventoryIndex == 0)
         {
-            Destroy(item.gameObject);
-        }
-        //Debug.Log("second step");
-        foreach (var item in Items)
-        {
-            GameObject obj = Instantiate(InventoryItem, ItemContent);
-            var itemName = obj.transform.Find("ItemName").GetComponent<Text>();
-            var itemIcon = obj.transform.Find("ItemIcon").GetComponent<Image>();
-            var removeButton = obj.transform.Find("RemoveItem").GetComponent<Button>();
-
-            //Debug.Log(itemName.text);
-            itemName.text = item.itemName;
-            //Debug.Log(item.itemName);
-            //Debug.Log(itemName.text);
-            itemIcon.sprite = item.icon;
-
-            if(EnableRemove.isOn)
-            {
-                removeButton.gameObject.SetActive(true);
-            }
-        }
-
-        SetInventoryItems();
-    }
-
-    public void EnableItemsRemove()
-    {
-        if(EnableRemove.isOn)
-        {
-            foreach (Transform item in ItemContent)
-            {
-                item.Find("RemoveItem").gameObject.SetActive(true);
-            }
+            if (Items.Count != 0)
+                InventoryIndex = Items.Count - 1;
+            
         }
         else
         {
-            foreach (Transform item in ItemContent)
-            {
-                item.Find("RemoveItem").gameObject.SetActive(false);
-            }
+            InventoryIndex--;
         }
+      
     }
-
-    public void SetInventoryItems()
+    
+    public void Drop()
     {
-        InventoryItems = ItemContent.GetComponentsInChildren<InventoryItemController>();
+        Items.RemoveAt(InventoryIndex);
+        toolkit.RemoveFromToolkit(InventoryIndex);
+        
+        var obj = Instantiate(selectedItem.prefab, player.rayHitLocation, Quaternion.identity);
 
-        for(var i = 0; i < Items.Count; i++)
+        selectedItem = null;
+        
+        if (InventoryIndex == 0)
         {
-            InventoryItems[i].AddInventoryitem(Items[i]);
+            if (Items.Count != 0)
+                InventoryIndex = Items.Count - 1;
+            
+        }
+        else
+        {
+            InventoryIndex--;
         }
     }
-
-    public void Unfreeze()
+    
+    private void InventoryScrolling()
     {
-        Time.timeScale = 1.0f;
-    }
+        var scroll = Input.mouseScrollDelta;
+        var scrollValue = scroll.y;
 
+        if (scroll.y != 0)
+        {
+            if (Items.Count == 0) return;
+            
+            player.UnEquipItem();
+            
+            if (InventoryIndex - (int) scrollValue == Items.Count)
+                {
+                    var image = toolkit.ItemImages[InventoryIndex];
+                    image.color = new Color(85/255f, 111/255f, 123/255f);
+                    InventoryIndex = 0;
+                    selectedItem = toolkit.Items[InventoryIndex];
+                    image = toolkit.ItemImages[InventoryIndex];
+                    image.color = new Color(218/255f, 242/255f, 255/255f);
+                }
+                else if (InventoryIndex - (int) scrollValue < 0)
+                {
+                    var image = toolkit.ItemImages[InventoryIndex];
+                    image.color = new Color(85/255f, 111/255f, 123/255f);
+                    InventoryIndex = toolkit.Items.Count - 1;
+                    selectedItem = toolkit.Items[InventoryIndex];
+                    image = toolkit.ItemImages[InventoryIndex];
+                    image.color = new Color(218/255f, 242/255f, 255/255f);
+                }
+                else if (InventoryIndex < Items.Count && InventoryIndex >= 0)
+                {
+                    var image = toolkit.ItemImages[InventoryIndex];
+                    image.color = new Color(85/255f, 111/255f, 123/255f);
+                    InventoryIndex -= (int) scrollValue;
+                    selectedItem = toolkit.Items[InventoryIndex];
+                    image = toolkit.ItemImages[InventoryIndex];
+                    image.color = new Color(218/255f, 242/255f, 255/255f);
+                }
+            
+        }
+    }
+    
+    public void Use()
+    {
+        Debug.Log("Trying to use....");
+        switch (selectedItem.type)
+        {
+            case ItemType.Consumable:
+                
+                if (selectedItem.script.ApplyEffectOnPlayer(player))
+                {
+                    Debug.Log("Used!");
+                    Remove(selectedItem);
+                    selectedItem = null;
+                }
+                else
+                {
+                    Debug.Log("Can't use!");
+                }
+               
+                break;
+            case ItemType.Equippable:
+
+                if (player.isEquipped)
+                {
+                    foreach (MonoBehaviour script in player.equippedObjectLocation.GetChild(0).gameObject.GetComponents<MonoBehaviour>())
+                    {
+                        if (script is IEquippableItemAction targetScript)
+                        {
+                            targetScript.Use(player);
+                        }
+                    }
+                    
+                    Remove(selectedItem);
+                    player.isEquipped = false;
+                }
+                else
+                {
+                    player.EquipItem(selectedItem.prefab);
+                }
+                
+                break;
+        }
+    }
 }

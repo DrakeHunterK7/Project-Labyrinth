@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Inventory
+  - Toolkit
+  - Crosshair
+  - ItemUIBox
+  - ItemUIText
+  - MessageBox
   layers:
   - Default
   - TransparentFX

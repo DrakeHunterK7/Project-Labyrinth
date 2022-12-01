@@ -1,10 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
 {
     public Item Item;
+    private int i;
+
+    public static bool refeshAdd = false;
 
     public void Pickup()
     {
@@ -18,10 +23,12 @@ public class ItemPickup : MonoBehaviour
             InventoryManager.instance.Add(Item);
             Destroy(gameObject);
         }
-        
     }
+    
+    
 
-    //private void OnMouseDown(){
-    //    Pickup();   
-    //}
+    public void PickupItem(){
+        Pickup();   
+        refeshAdd = true;
+    }
 }

@@ -11,6 +11,8 @@ public class InventoryItemController : MonoBehaviour
 
     private Transform _playerTransform;
 
+    public static bool refreshDelete = false;
+
     //public GameObject prefab;
 
     public void RemoveInventoryItem()
@@ -32,6 +34,11 @@ public class InventoryItemController : MonoBehaviour
         if (_playerTransform == null || item == null) return;
         Instantiate(item.prefab, _playerTransform.position + _playerTransform.forward * 1.0f
         , Quaternion.identity);
+    }
+
+    public void refreshToolKit()
+    {
+        refreshDelete = true;
     }
 
 }
