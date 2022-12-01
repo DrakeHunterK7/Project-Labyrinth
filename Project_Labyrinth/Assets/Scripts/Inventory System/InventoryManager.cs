@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using System;
 using Unity.VisualScripting;
 using ColorUtility = UnityEngine.ColorUtility;
+using System.Linq;
+using Inventory_System;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -39,7 +41,7 @@ public class InventoryManager : MonoBehaviour
 
             item.script = item.prefab.GetComponent<ItemController>();
             item.script.Item = item;
-
+            
             MessageManager.instance.DisplayMessage("Picked up " + item.name, Color.cyan);
             return true;
         }
@@ -100,6 +102,8 @@ public class InventoryManager : MonoBehaviour
         {
             if (Items.Count == 0) return;
             
+            player.UnEquipItem();
+            
             if (InventoryIndex - (int) scrollValue == Items.Count)
                 {
                     var image = toolkit.ItemImages[InventoryIndex];
@@ -151,6 +155,25 @@ public class InventoryManager : MonoBehaviour
                
                 break;
             case ItemType.Equippable:
+
+                if (player.isEquipped)
+                {
+                    foreach (MonoBehaviour script in player.equippedObjectLocation.GetChild(0).gameObject.GetComponents<MonoBehaviour>())
+                    {
+                        if (script is IEquippableItemAction targetScript)
+                        {
+                            targetScript.Use(player);
+                        }
+                    }
+                    
+                    Remove(selectedItem);
+                    player.isEquipped = false;
+                }
+                else
+                {
+                    player.EquipItem(selectedItem.prefab);
+                }
+                
                 break;
         }
     }

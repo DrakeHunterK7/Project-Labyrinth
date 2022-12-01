@@ -46,8 +46,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Items: []
   toolkit: {fileID: 5107523406768012414}
-  inventoryItems: []
-  inventoryItemPrefab: {fileID: 9000268036551864827, guid: 13cdfbd6666f18942ac160795c8e74c6, type: 3}
   InventoryIndex: 0
   selectedItem: {fileID: 0}
   capacity: 9
@@ -125,7 +123,9 @@ MonoBehaviour:
   inventoryManager: {fileID: 17381260326044486}
   collarLight: {fileID: 6675290054781369047}
   playerModel: {fileID: 0}
+  equippedObjectLocation: {fileID: 5507474824181085586}
   health: 100
+  isEquipped: 0
   speedBoostMultiplier: 1
   crouchTime: 0.1
   crouchHeight: 4
@@ -183,6 +183,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 684231526890149823}
+  - {fileID: 5507474824181085586}
   m_Father: {fileID: 460784497338372640}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -345,6 +346,37 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &8031215060447464625
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5507474824181085586}
+  m_Layer: 0
+  m_Name: EquippedLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5507474824181085586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8031215060447464625}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1.497}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 460784499022216929}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8725802405986480826
 GameObject:
   m_ObjectHideFlags: 0

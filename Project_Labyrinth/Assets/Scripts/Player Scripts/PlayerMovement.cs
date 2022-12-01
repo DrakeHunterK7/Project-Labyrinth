@@ -28,8 +28,12 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     [Header("Player Model Parameters")]
     [SerializeField] private GameObject playerModel;
 
+    [SerializeField] public Transform equippedObjectLocation;
+
     [Header("Player Parameters")] 
     [SerializeField] public float health = 100f;
+
+    public bool isEquipped = false;
 
     private float camXRotation;
     private float camYRotation;
@@ -290,6 +294,9 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     
     void FPSRay()
     {
+        if (isEquipped) return;
+        
+        
         RaycastHit hit;
         if (Physics.Raycast(mainCam.transform.position, mainCam.transform.forward, out hit, FPSRayRange))
         {
@@ -365,6 +372,27 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         {
             inventoryManager.Use();
         }
+    }
+
+    public void EquipItem(GameObject itemToEquip)
+    {
+        var equippedItem = Instantiate(itemToEquip, equippedObjectLocation.position, Quaternion.identity);
+        equippedItem.transform.SetParent(equippedObjectLocation);
+        isEquipped = true;
+
+        var rb = equippedItem.GetComponent<Rigidbody>();
+
+        if (rb != null)
+        {
+            rb.useGravity = false;
+        }
+    }
+
+    public void UnEquipItem()
+    {
+        if(equippedObjectLocation.childCount > 0)
+            Destroy(equippedObjectLocation.GetChild(0).gameObject);
+        isEquipped = false;
     }
 
     public IEnumerator RestoreVariable(PlayerAttributeAffected attribute, float duration)

@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Inventory_System;
 using UnityEngine;
 
 public class ItemController : MonoBehaviour
 {
     public Item Item;
-    
+   
     public bool ApplyEffectOnPlayer(PlayerMovement player)
     {
         if (Item.type != ItemType.Consumable) return false;
@@ -38,7 +39,6 @@ public class ItemController : MonoBehaviour
 
         return false;
     }
-    
     void ApplyTemporaryEffect(PlayerMovement player)
     {
        switch (Item.playerAttributeAffected)
@@ -56,4 +56,5 @@ public class ItemController : MonoBehaviour
        player.StartCoroutine(player.RestoreVariable(Item.playerAttributeAffected, Item.effectDuration));
 
     }
+    
 }
