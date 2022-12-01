@@ -21,6 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEditor.AI;
 using UnityEngine.SceneManagement;
@@ -337,8 +338,11 @@ public class GenerateMap : MonoBehaviour
         _rooms.transform.localScale = new Vector3(worldScaleMultiplier, worldScaleMultiplier, worldScaleMultiplier);
 
         // This Bakes a new NavMesh after the map is created
-        NavMeshBuilder.BuildNavMesh();
-
+        foreach( NavMeshSurface surface in FindObjectsOfType<NavMeshSurface>())
+        {
+            surface.BuildNavMesh();
+            break;
+        }
         // TEST PLAYER
         /*GameObject player;
 

@@ -16,6 +16,7 @@ public class EnemyFov : MonoBehaviour
     void Start()
     {
         agent = transform.GetComponent<NavMeshAgent>();
+        player = GameObject.FindWithTag("Player").transform;
     }
 
     // Update is called once per frame
@@ -34,6 +35,8 @@ public class EnemyFov : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (player == null) return;
+        
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, maxradius);
 
@@ -61,11 +64,11 @@ public class EnemyFov : MonoBehaviour
         Collider[] overlaps = new Collider[10];
         int count = Physics.OverlapSphereNonAlloc(checkingObject.position, maxradius, overlaps);
 
-        for (int i = 0; i < count + 1; i++)
+        foreach (Collider overlap in overlaps)
         {
-            if (overlaps[i] != null)
+            if (overlap != null)
             {
-                if (overlaps[i].transform == target)
+                if (overlap.transform == target)
                 {
                     Vector3 directionbetween = (target.position - checkingObject.position).normalized;
                     directionbetween.y *= 0;

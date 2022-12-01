@@ -218,7 +218,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   maxangle: 45
-  maxradius: 15
 --- !u!195 &3163886911315717114
 NavMeshAgent:
   m_ObjectHideFlags: 0
