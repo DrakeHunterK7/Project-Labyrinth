@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 4
   itemName: Pills
-  value: 25
+  value: 1.5
   icon: {fileID: 21300000, guid: eae4a1227c8564b49b33a6939c307f4a, type: 3}
   prefab: {fileID: 1985338178271116, guid: 48ec186542777474bb236dff1694340c, type: 3}
+  type: 0
+  playerAttributeAffected: 2
+  effectLength: 0
+  effectDuration: 10
+  script: {fileID: 7099121941558557296, guid: 48ec186542777474bb236dff1694340c, type: 3}

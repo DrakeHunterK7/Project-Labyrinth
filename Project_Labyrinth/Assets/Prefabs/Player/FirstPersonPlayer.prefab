@@ -46,10 +46,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Items: []
   toolkit: {fileID: 5107523406768012414}
-  ItemContent: {fileID: 0}
-  InventoryItem: {fileID: 6242409108754658038, guid: 51c25160649f046a9a3571b609512bb8, type: 3}
-  EnableRemove: {fileID: 0}
-  InventoryItems: []
+  inventoryItems: []
+  inventoryItemPrefab: {fileID: 9000268036551864827, guid: 13cdfbd6666f18942ac160795c8e74c6, type: 3}
+  InventoryIndex: 0
   selectedItem: {fileID: 0}
   capacity: 9
   player: {fileID: 460784497338372643}
@@ -127,6 +126,10 @@ MonoBehaviour:
   collarLight: {fileID: 6675290054781369047}
   playerModel: {fileID: 0}
   health: 100
+  speedBoostMultiplier: 1
+  crouchTime: 0.1
+  crouchHeight: 4
+  crouchCenter: {x: 0, y: 1.5, z: 0}
   crouchHeadBobAmount: 0.05
   crouchHeadBobSpeed: 4
   walkHeadBobAmount: 0.1

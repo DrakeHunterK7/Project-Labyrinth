@@ -43,12 +43,18 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private float sprintSpeed = 20f;
     private float crouchSpeed = 5f;
     private bool canCrouch = true;
-    private float crouchTime = 0.25f;
     private float activeSpeed;
+    public float speedBoostMultiplier = 1.0f;
 
     private bool isWalking;
     private bool isSprinting;
     private bool isCrouching;
+    
+    [Header("Crouch Parameters")]
+    [SerializeField] private float crouchTime = 0.25f;
+    [SerializeField] private float crouchHeight = 4f;
+    [SerializeField] private Vector3 crouchCenter = new Vector3(0, 1.5f, 0);
+        
 
     [Header("HeadBob Parameters")]
     [SerializeField] private float crouchHeadBobAmount = 0.05f;
@@ -61,7 +67,6 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private float headbobTimer;
     private Vector3 cameraPosition;
     private Vector3 cameraInitialPosition;
-    private Quaternion cameraInitialRotation;
     public Vector3 rayHitLocation;
 
     private Vector3 velocity = Vector3.zero;
@@ -121,7 +126,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
             Vector3 move = Vector3.ClampMagnitude(forwardDirectionVector * y + mainCam.transform.right * x, 1);
             move.y = 0;
-            controller.Move(((move.normalized * activeSpeed) + (gravity)) * Time.deltaTime);
+            controller.Move(((move.normalized * activeSpeed * speedBoostMultiplier ) + (gravity)) * Time.deltaTime);
 
             HeadBobHandler(move);
             
@@ -159,7 +164,16 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         {
             isWalking = false;
             isSprinting = true;
-            isCrouching = false;
+            if (isCrouching)
+            {
+                isCrouching = false;
+                StartCoroutine(HandleCrouch());
+            }
+            else
+            {
+                isCrouching = false;
+            }
+            
         }
         else if (Input.GetKeyUp(KeyCode.LeftShift))
         {
@@ -200,7 +214,6 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             }
             else
             {
-                cameraInitialRotation = mainCam.transform.rotation;
                 cameraInitialPosition = mainCam.transform.position;
             }
         }
@@ -213,9 +226,9 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
         float currentCrouchTime = 0f;
 
-        float targetHeight = isCrouching ? 4f : 8f;
+        float targetHeight = isCrouching ? crouchHeight : 8f;
         float currentHeight = controller.height;
-        Vector3 targetCenter = isCrouching ? new Vector3(0f, 1.5f, 0f) : new Vector3(0f, 0f, 0f);
+        Vector3 targetCenter = isCrouching ? crouchCenter: new Vector3(0f, 0f, 0f);
         Vector3 currentCenter = controller.center;
         Vector3 currentPosition = transform.position;
         Vector3 targetPosition = new Vector3(transform.position.x,
@@ -225,6 +238,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         {
             controller.height = Mathf.Lerp(currentHeight, targetHeight, currentCrouchTime / crouchTime);
             controller.center = Vector3.Lerp(currentCenter, targetCenter, currentCrouchTime / crouchTime);
+            
             transform.position = Vector3.Lerp(currentPosition, targetPosition, currentCrouchTime / crouchTime);
             currentCrouchTime += Time.deltaTime;
 
@@ -236,21 +250,32 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         
         canCrouch = true;
     }
-
-    private void FixedUpdate()
-    {
-        
-
-        
-    }
-
-
+    
     public void Damage(float damage)
     {
         health -= damage;
         if(health <= 0)
             Death();
     }
+
+    public bool HealthRestore(float amount)
+    {
+        if (health + amount <= 100)
+        {
+            health += amount;
+            return true;
+        }
+        else if (health != 100)
+        {
+            health += (100 - health);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
 
     void Death()
     {
@@ -330,7 +355,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             {
                 MessageManager.instance.DisplayMessage("Inventory is Full!", Color.yellow);
             }
-                
+            
         }
     }
     
@@ -341,6 +366,25 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             inventoryManager.Use();
         }
     }
+
+    public IEnumerator RestoreVariable(PlayerAttributeAffected attribute, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        
+        switch (attribute)
+        {
+            case PlayerAttributeAffected.Health:
+                health = 100f;
+                break;
+            case PlayerAttributeAffected.Stamina:
+                break;
+            case PlayerAttributeAffected.MovementSpeed:
+                speedBoostMultiplier = 1.0f;
+                break;
+        }
+    }
+    
+    
     
     void DropItem()
     {

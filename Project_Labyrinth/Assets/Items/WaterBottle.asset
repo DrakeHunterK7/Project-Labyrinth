@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 5
   itemName: Water Bottle
-  value: 30
+  value: 10
   icon: {fileID: 21300000, guid: 4cda5eb0d87d1405e861cb7724143d63, type: 3}
   prefab: {fileID: 1216505430168376, guid: 57e3542e6c16dfd40972c0b1b0899afb, type: 3}
+  type: 0
+  playerAttributeAffected: 0

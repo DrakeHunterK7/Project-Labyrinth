@@ -13,12 +13,6 @@ public class InventoryManager : MonoBehaviour
 
     public ToolKitManager toolkit;
 
-    public Transform ItemContent;
-    public GameObject InventoryItem;
-
-    public Toggle EnableRemove;
-    public InventoryItemController[] InventoryItems;
-    
     public int InventoryIndex = 0;
     public Item selectedItem;
 
@@ -42,6 +36,10 @@ public class InventoryManager : MonoBehaviour
         {
             Items.Add(item);
             toolkit.AddToToolkit(item);
+
+            item.script = item.prefab.GetComponent<ItemController>();
+            item.script.Item = item;
+
             MessageManager.instance.DisplayMessage("Picked up " + item.name, Color.cyan);
             return true;
         }
@@ -58,6 +56,17 @@ public class InventoryManager : MonoBehaviour
         Items.RemoveAt(InventoryIndex);
         toolkit.RemoveFromToolkit(InventoryIndex);
         selectedItem = null;
+        
+        if (InventoryIndex == 0)
+        {
+            if (Items.Count != 0)
+                InventoryIndex = Items.Count - 1;
+            
+        }
+        else
+        {
+            InventoryIndex--;
+        }
       
     }
     
@@ -91,15 +100,7 @@ public class InventoryManager : MonoBehaviour
         {
             if (Items.Count == 0) return;
             
-            if (selectedItem == null && (InventoryIndex < Items.Count && InventoryIndex >= 0))
-            {
-                selectedItem = Items[InventoryIndex];
-                var image = toolkit.ItemImages[InventoryIndex];
-                image.color = new Color(218/255f, 242/255f, 255/255f);
-            }
-            else
-            {
-                if (InventoryIndex - (int) scrollValue == Items.Count)
+            if (InventoryIndex - (int) scrollValue == Items.Count)
                 {
                     var image = toolkit.ItemImages[InventoryIndex];
                     image.color = new Color(85/255f, 111/255f, 123/255f);
@@ -126,7 +127,7 @@ public class InventoryManager : MonoBehaviour
                     image = toolkit.ItemImages[InventoryIndex];
                     image.color = new Color(218/255f, 242/255f, 255/255f);
                 }
-            }
+            
         }
     }
     
@@ -136,9 +137,18 @@ public class InventoryManager : MonoBehaviour
         switch (selectedItem.type)
         {
             case ItemType.Consumable:
-                Debug.Log("Used!");
-                Remove(selectedItem);
-                selectedItem = null;
+                
+                if (selectedItem.script.ApplyEffectOnPlayer(player))
+                {
+                    Debug.Log("Used!");
+                    Remove(selectedItem);
+                    selectedItem = null;
+                }
+                else
+                {
+                    Debug.Log("Can't use!");
+                }
+               
                 break;
             case ItemType.Equippable:
                 break;

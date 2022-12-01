@@ -9,10 +9,21 @@ public class Item : ScriptableObject
 {
     public int id;
     public string itemName;
-    public int value;
+    public float value;
     public Sprite icon; 
     public GameObject prefab;
     public ItemType type;
+    public PlayerAttributeAffected playerAttributeAffected;
+    public EffectLength effectLength;
+    public float effectDuration;
+    public ItemController script;
+
+    private void OnEnable()
+    {
+        
+    }
+
+    
 }
 
 public enum ItemType
@@ -20,6 +31,19 @@ public enum ItemType
     Consumable, 
     Equippable,
     TaskItem,
+}
+
+public enum PlayerAttributeAffected
+{
+    Health, 
+    Stamina,
+    MovementSpeed,
+}
+
+public enum EffectLength
+{
+    Temporary,
+    Permanent
 }
 
 
