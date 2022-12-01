@@ -16,6 +16,7 @@ public class EnemyFov : MonoBehaviour
     void Start()
     {
         agent = transform.GetComponent<NavMeshAgent>();
+        player = GameObject.FindWithTag("Player").transform;
     }
 
     // Update is called once per frame
@@ -23,8 +24,8 @@ public class EnemyFov : MonoBehaviour
     {
         isinFOV = inFOV(transform, player, maxangle, maxradius);
 
-        if (isinFOV)
-        //if(true)
+        //if (isinFOV)
+        if(true)
         {
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
@@ -34,6 +35,8 @@ public class EnemyFov : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (player == null) return;
+        
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, maxradius);
 
@@ -58,20 +61,19 @@ public class EnemyFov : MonoBehaviour
 
     public static bool inFOV(Transform checkingObject, Transform target, float maxangle, float maxradius)
     {
-        Collider[] overlaps = new Collider[10];
-        int count = Physics.OverlapSphereNonAlloc(checkingObject.position, maxradius, overlaps);
+        Collider[] overlaps = new Collider[100];
+        Physics.OverlapSphereNonAlloc(checkingObject.position, maxradius, overlaps);
 
-        for (int i = 0; i < count + 1; i++)
+        foreach (Collider overlap in overlaps)
         {
-            if (overlaps[i] != null)
+            if (overlap != null)
             {
-                if (overlaps[i].transform == target)
+                if (overlap.transform == target)
                 {
                     Vector3 directionbetween = (target.position - checkingObject.position).normalized;
                     directionbetween.y *= 0;
 
                     float angle = Vector3.Angle(checkingObject.forward, directionbetween);
-
                     if (angle <= maxangle)
                     {
                         Ray ray = new Ray(checkingObject.position, target.position - checkingObject.position);
@@ -79,8 +81,11 @@ public class EnemyFov : MonoBehaviour
 
                         if (Physics.Raycast(ray,out hit, maxradius))
                         {
-                            if (hit.transform == target)
+                            if (hit.collider.gameObject.CompareTag("Player"))
+                            {
                                 return true;
+                            }
+                                
                         }
                     }
                 }

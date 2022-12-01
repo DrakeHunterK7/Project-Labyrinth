@@ -28,6 +28,10 @@ using UnityEngine;
 
 public class A_Star_Pathfinding : MonoBehaviour
 {
+
+    // A node is an object that has position,
+    // A node before it, and a cost associated to it
+    // A node is created when given a position on the grid
     public class Node
     {
         public Vector2Int Position { get; private set; }
@@ -40,24 +44,32 @@ public class A_Star_Pathfinding : MonoBehaviour
         }
     }
 
+    // keeps track of the cost and 
+    // if the algorithm can traverse
+    // the path.
     public struct PathCost
     {
         public bool traversable;
         public float cost;
     }
 
+    // neighbors in the 4 cardinal directions
     static readonly Vector2Int[] neighbors = {
-        new Vector2Int(1, 0),
-        new Vector2Int(-1, 0),
-        new Vector2Int(0, 1),
-        new Vector2Int(0, -1),
+        new Vector2Int(1, 0), // positive X
+        new Vector2Int(-1, 0), // negative X
+        new Vector2Int(0, 1), // positive Z
+        new Vector2Int(0, -1), // negative Z
     };
 
+    // a grid is a glorified array of nodes
     Grid<Node> grid;
     SimplePriorityQueue<Node, float> queue;
+
+    // Closed contains each unique isntance of a node
     HashSet<Node> closed;
     Stack<Vector2Int> stack;
 
+    // 
     public A_Star_Pathfinding(Vector2Int size)
     {
         grid = new Grid<Node>(size, Vector2Int.zero);
@@ -75,6 +87,7 @@ public class A_Star_Pathfinding : MonoBehaviour
         }
     }
 
+    // 
     void ResetNodes()
     {
         var size = grid.Size;
@@ -144,6 +157,7 @@ public class A_Star_Pathfinding : MonoBehaviour
         return null;
     }
 
+    //
     List<Vector2Int> ReconstructPath(Node node)
     {
         List<Vector2Int> result = new List<Vector2Int>();
