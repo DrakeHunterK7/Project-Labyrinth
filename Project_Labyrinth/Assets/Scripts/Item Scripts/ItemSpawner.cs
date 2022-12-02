@@ -14,9 +14,19 @@ public class ItemSpawner : MonoBehaviour
 
     public void SpawnItem()
     {
-        GameObject itemToSpawn = itemManager.GetItemToSpawn();
+        GameObject itemToSpawn;
         GameObject item;
 
+        if (itemManager != null)
+        {
+            itemToSpawn = itemManager.GetItemToSpawn();
+        }
+        else
+        {
+            itemToSpawn = null;
+        }
+        
+       
         if(itemToSpawn != null)
         {
             item = Instantiate(itemToSpawn, transform.position, Quaternion.identity);
