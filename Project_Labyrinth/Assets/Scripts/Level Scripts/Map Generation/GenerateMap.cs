@@ -68,6 +68,8 @@ public class GenerateMap : MonoBehaviour
     bool startingRoomAdded;
     bool endingRoomAdded;
 
+    [SerializeField] private GameObject player;
+
 
     // other
     [SerializeField]
@@ -344,10 +346,8 @@ public class GenerateMap : MonoBehaviour
             break;
         }
         // TEST PLAYER
-        /*GameObject player;
 
-        player = Instantiate(testAIPrefab, new Vector3(rooms[0].position.x, 1.0f, rooms[0].position.y), Quaternion.identity);
-        player.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);*/
+        player.transform.position = GameObject.FindWithTag("Waypoint").transform.position + Vector3.up * 5f;
     }
 
     // Adds room to list of rooms and then spawns room in world space
