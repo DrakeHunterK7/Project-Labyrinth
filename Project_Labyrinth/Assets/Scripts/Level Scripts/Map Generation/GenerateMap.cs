@@ -43,7 +43,15 @@ public class GenerateMap : MonoBehaviour
     bool triangulationOn = false;
 
     [SerializeField]
+    bool toggleItemSpawn;
+
+    [SerializeField]
+    bool toggleSeedUsage;
+
+    [SerializeField]
     float mapSeed;
+
+    float currentSeed;
 
     private int currentLevel;
 
@@ -74,7 +82,7 @@ public class GenerateMap : MonoBehaviour
     float PrimEdgeCycleChance;
 
     [SerializeField]
-    GameObject testAIPrefab;
+    GameObject playerPrefab;
 
     // Room Prefabs
     [SerializeField]
@@ -87,6 +95,7 @@ public class GenerateMap : MonoBehaviour
     // Map Instance Variables
     Grid<CellType> grid;
     List<Room> rooms;
+    List<GameObject> spawnedRooms;
     Delaunay2D delaunay2D;
 
     GameObject parentRoom;
@@ -115,6 +124,7 @@ public class GenerateMap : MonoBehaviour
         Prims();
         Pathfinding();
         OtherWork();
+        SpawnItems();
 
     }
 
@@ -161,6 +171,15 @@ public class GenerateMap : MonoBehaviour
            // If conditions are met then add then add to collection of rooms
             if (canAdd)
             {
+                if(roomToSpawn == roomPrefabs[0]) // ensures the starting room is added
+                {
+                    startingRoomAdded = true;
+                }
+                else if(roomToSpawn == roomPrefabs[1]) // ensures the ending room is added
+                {
+                    endingRoomAdded = true;
+                }
+
                 addRoom(tempRoom);
             }
         }
@@ -316,7 +335,6 @@ public class GenerateMap : MonoBehaviour
 
         foreach(Vector2Int hallway in uniqueHallways)
         {
-            Debug.Log(hallway);
             if (grid[hallway] == CellType.Hallway)
             {
                 //Debug.Log(hallway);
@@ -327,6 +345,17 @@ public class GenerateMap : MonoBehaviour
 
     }
 
+    // Will Spawn Items in each room
+    void SpawnItems()
+    {
+        foreach(GameObject room in spawnedRooms)
+        {
+            if(toggleItemSpawn)
+            {
+                room.GetComponent<Room_Controller>().SpawnItems();
+            }
+        }
+    }
 
     // This is where all the setup that doesn't really have a label will go
     void OtherWork()
@@ -344,10 +373,10 @@ public class GenerateMap : MonoBehaviour
             break;
         }
         // TEST PLAYER
-        /*GameObject player;
+        //GameObject player;
 
-        player = Instantiate(testAIPrefab, new Vector3(rooms[0].position.x, 1.0f, rooms[0].position.y), Quaternion.identity);
-        player.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);*/
+        //player = Instantiate(playerPrefab, new Vector3(rooms[0].position.x, 1.0f, rooms[0].position.y), Quaternion.identity);
+        //player.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
     }
 
     // Adds room to list of rooms and then spawns room in world space
@@ -385,18 +414,14 @@ public class GenerateMap : MonoBehaviour
         // Will account for every room besides the starting room
         int roomIndex = Random.Range(2, roomPrefabs.Count);
 
-        Debug.Log("" + roomIndex);
+        //Debug.Log("" + roomIndex);
 
         if(!startingRoomAdded)
         {
-            startingRoomAdded = true;
-
             return roomPrefabs[0];
         }
         else if(!endingRoomAdded)
         {
-            endingRoomAdded = true;
-
             return roomPrefabs[1];
         }
         else
@@ -414,7 +439,8 @@ public class GenerateMap : MonoBehaviour
 
         room.isStatic = true;
         room.transform.parent = parentRoom.transform;
-        
+
+        spawnedRooms.Add(room);
     }
 
     // Spawns the hallways between the rooms
@@ -558,8 +584,8 @@ public class GenerateMap : MonoBehaviour
         myLine.transform.position = start;
         myLine.AddComponent<LineRenderer>();
         LineRenderer lr = myLine.GetComponent<LineRenderer>();
-        lr.SetColors(color, color);
-        lr.SetWidth(0.1f, 0.1f);
+        //lr.SetColors(color, color);
+        //lr.SetWidth(0.1f, 0.1f);
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
         lr.transform.parent = parentLine.transform;
@@ -621,18 +647,27 @@ public class GenerateMap : MonoBehaviour
 
         gridSize = gridDimensions;
         rooms = new List<Room>();
+        spawnedRooms = new List<GameObject>();
         grid = new Grid<CellType>(gridSize, Vector2Int.zero);
 
-        // this is the seed setter
-        Random.InitState((int) mapSeed + currentLevel);
-
-
+        
+        // Allows us to swap from random seeds to set seeds
+        if(toggleSeedUsage)
+        {
+            Random.InitState((int)mapSeed + currentLevel);
+        }
+        else
+        {
+            Random.InitState((int) Random.Range(1, 100000));
+        }
+        
         // resets map per generation
         ClearRooms();
         ClearLines();
         ClearAI();
     }
 
+    // Swaps scenes when the player wishes to exit the level
     void ChangeLevel(int levelNum)
     {
         currentLevel += levelNum;
