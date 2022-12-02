@@ -6,10 +6,12 @@ using UnityEngine.AI;
 public class EnemyFov : MonoBehaviour
 {
     public Transform player;
+    private int index = 0;
     public float maxangle;
     private float maxradius = 75f;
     private bool isinFOV = false;
     private NavMeshAgent agent;
+    public List<GameObject> waypointlist = new List<GameObject>();
 
 
     // Start is called before the first frame update
@@ -17,6 +19,11 @@ public class EnemyFov : MonoBehaviour
     {
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
+        foreach(GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
+        {
+            waypointlist.Add(wp);
+        }
+        randomizeindex();
     }
 
     // Update is called once per frame
@@ -25,12 +32,22 @@ public class EnemyFov : MonoBehaviour
         isinFOV = inFOV(transform, player, maxangle, maxradius);
 
         //if (isinFOV)
-        if(true)
+        if(isinFOV)
         {
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
                 Destroy(player.gameObject);
-        };
+        }
+        else
+        {
+            agent.SetDestination(waypointlist[index].transform.position);
+        }
+        if (index > waypointlist.Count - 1)
+        {
+            index = 0;
+        }
+        trackDistance();
+        Debug.Log(waypointlist[index].transform.position);
     }
 
     private void OnDrawGizmos()
@@ -95,6 +112,21 @@ public class EnemyFov : MonoBehaviour
 
 
         return false;
+    }
+
+    private void trackDistance()
+    {
+        if(Vector3.Magnitude(waypointlist[index].transform.position - transform.position) < 2f)
+        {
+            randomizeindex();
+        }
+
+        
+    }
+
+    private void randomizeindex()
+    {
+        index = Random.Range(0, waypointlist.Count - 1);
     }
 
 }

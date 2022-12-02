@@ -11,6 +11,7 @@ TagManager:
   - ItemUIBox
   - ItemUIText
   - MessageBox
+  - Waypoint
   layers:
   - Default
   - TransparentFX
