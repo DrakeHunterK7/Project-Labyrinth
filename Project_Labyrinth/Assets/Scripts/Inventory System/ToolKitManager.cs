@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class ToolKitManager : MonoBehaviour
 {
-    public List<Item> Items = new List<Item>();
+    public List<Item> Items;
 
     public List<Image> ItemImages;
     //private List<Item> OldItems = new List<Item>();
@@ -40,8 +40,6 @@ public class ToolKitManager : MonoBehaviour
         {
             GameObject obj = Instantiate(InventoryItem, ToolKitContent);
 
-           
-                    
             var itemName = obj.transform.Find("ItemName").GetComponent<Text>();
             var itemIcon = obj.transform.Find("ItemIcon").GetComponent<Image>();
 

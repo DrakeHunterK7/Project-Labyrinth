@@ -10,7 +10,12 @@ public class ItemController : MonoBehaviour
    
     public bool ApplyEffectOnPlayer(PlayerMovement player)
     {
-        if (Item.type != ItemType.Consumable) return false;
+
+        if (Item.type != ItemType.Consumable)
+        {
+            Debug.Log("1");
+            return false;
+        }
         
         switch (Item.playerAttributeAffected)
         {
@@ -18,7 +23,12 @@ public class ItemController : MonoBehaviour
                 if (player.HealthRestore(Item.value))
                     return true;
                 else
+                {
+                    Debug.Log(Item.value);
+                    Debug.Log("2");
                     return false;
+                }
+                    
                 
             case PlayerAttributeAffected.Stamina:
                 break;
@@ -37,6 +47,7 @@ public class ItemController : MonoBehaviour
                 
         }
 
+        Debug.Log("3");
         return false;
     }
     void ApplyTemporaryEffect(PlayerMovement player)

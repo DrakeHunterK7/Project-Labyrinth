@@ -269,15 +269,18 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             health += amount;
             return true;
         }
-        else if (health != 100)
+        else if (health - 100 < 0.1f)
+        {
+            MessageManager.instance.DisplayMessage("Health is already full!", Color.yellow);
+            return false;
+        }
+        else if (100-health < amount)
         {
             health += (100 - health);
             return true;
         }
-        else
-        {
-            return false;
-        }
+        
+        else return false;
     }
     
 

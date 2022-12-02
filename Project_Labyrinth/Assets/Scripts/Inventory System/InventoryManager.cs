@@ -11,7 +11,7 @@ using Inventory_System;
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
-    public List<Item> Items = new List<Item>();
+    public List<Item> Items;
 
     public ToolKitManager toolkit;
 
@@ -104,12 +104,12 @@ public class InventoryManager : MonoBehaviour
             
             player.UnEquipItem();
             
-            if (InventoryIndex - (int) scrollValue == Items.Count)
+                if (InventoryIndex - (int) scrollValue == Items.Count)
                 {
                     var image = toolkit.ItemImages[InventoryIndex];
                     image.color = new Color(85/255f, 111/255f, 123/255f);
                     InventoryIndex = 0;
-                    selectedItem = toolkit.Items[InventoryIndex];
+                    selectedItem = Items[InventoryIndex];
                     image = toolkit.ItemImages[InventoryIndex];
                     image.color = new Color(218/255f, 242/255f, 255/255f);
                 }
@@ -118,7 +118,7 @@ public class InventoryManager : MonoBehaviour
                     var image = toolkit.ItemImages[InventoryIndex];
                     image.color = new Color(85/255f, 111/255f, 123/255f);
                     InventoryIndex = toolkit.Items.Count - 1;
-                    selectedItem = toolkit.Items[InventoryIndex];
+                    selectedItem = Items[InventoryIndex];
                     image = toolkit.ItemImages[InventoryIndex];
                     image.color = new Color(218/255f, 242/255f, 255/255f);
                 }
@@ -127,7 +127,7 @@ public class InventoryManager : MonoBehaviour
                     var image = toolkit.ItemImages[InventoryIndex];
                     image.color = new Color(85/255f, 111/255f, 123/255f);
                     InventoryIndex -= (int) scrollValue;
-                    selectedItem = toolkit.Items[InventoryIndex];
+                    selectedItem = Items[InventoryIndex];
                     image = toolkit.ItemImages[InventoryIndex];
                     image.color = new Color(218/255f, 242/255f, 255/255f);
                 }
