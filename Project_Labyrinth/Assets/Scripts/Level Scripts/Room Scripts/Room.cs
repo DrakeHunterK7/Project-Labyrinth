@@ -12,6 +12,8 @@ public class Room
     List<Vector2Int> entracePositions; // positions of the entrance(s) for a room
     List<bool> entranceChosen;
 
+    List<GameObject> itemSpawners;
+
     // Default Constructor
     public Room()
     {
