@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Slave : MonoBehaviour
+public class Minion : MonoBehaviour
 {
     public Transform player;
     private GameObject playermodel;
@@ -12,7 +12,11 @@ public class Slave : MonoBehaviour
     private float maxradius = 75f;
     private bool isinFOV = false;
     private NavMeshAgent agent;
+    public Animator animator;
     public List<GameObject> waypointlist = new List<GameObject>();
+    public bool patrolling = false;
+    public bool destroyed = false;
+    public bool nearenemy = false;
 
 
     // Start is called before the first frame update
@@ -26,6 +30,10 @@ public class Slave : MonoBehaviour
             waypointlist.Add(wp);
         }
         randomizeindex();
+        
+        animator.SetBool("ispatrolling", patrolling);
+        animator.SetBool("isnearenemy", nearenemy);
+        //patrolling = true;
     }
 
     // Update is called once per frame
@@ -36,17 +44,24 @@ public class Slave : MonoBehaviour
         //if (isinFOV)
         if (isinFOV)
         {
-            agent.speed += 10;
+            
+            //agent.speed += 10;
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
             {
+                nearenemy = true;
+
                 playermodel.GetComponent<PlayerMovement>().smelly = true;
                 MessageManager.instance.DisplayMessage("You need a shower.", Color.red);
-                Destroy(this.gameObject);
+                if (!destroyed)
+                {
+                    StartCoroutine("destroyminion");
+                }
             }
         }
         else
         {
+            animator.Play("crawl");
             //agent.SetDestination(waypointlist[index].transform.position);
             agent.SetDestination(player.position);
         }
@@ -137,6 +152,14 @@ public class Slave : MonoBehaviour
         index = Random.Range(0, waypointlist.Count - 1);
     }
 
+    public IEnumerator destroyminion()
+    {
+       
+            destroyed = true;
+            yield return new WaitForSeconds(1.25f);
+            Destroy(this.gameObject);
+        
+    }
 }
 
 

@@ -26,18 +26,10 @@ public class Boss : MonoBehaviour
         }
         if (Vector3.Distance(player.transform.position, this.transform.position) < 10f)
         {
-            if(!coroutine)
-            StartCoroutine("damageplayer");
+
+            Destroy(player);
         }
-        else
-        {
-            if (coroutine)
-            {
-                 StopCoroutine("damageplayer");
-            coroutine = false;
-            }
-           
-        }
+
 
     }
 
