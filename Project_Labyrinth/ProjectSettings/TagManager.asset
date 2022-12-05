@@ -12,6 +12,8 @@ TagManager:
   - ItemUIText
   - MessageBox
   - Waypoint
+  - ObjectiveBox
+  - Interactable
   layers:
   - Default
   - TransparentFX
