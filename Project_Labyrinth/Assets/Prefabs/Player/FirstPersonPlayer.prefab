@@ -50,7 +50,7 @@ MonoBehaviour:
   selectedItem: {fileID: 0}
   capacity: 9
   player: {fileID: 460784497338372643}
-  error: {fileID: 0}
+  error: {fileID: 8300000, guid: 6b1da24d975762e479af012fdf33197a, type: 3}
   itemSound: {fileID: 7498816494625311247}
 --- !u!1 &460784497338372646
 GameObject:
@@ -136,10 +136,10 @@ MonoBehaviour:
   crouchCenter: {x: 0, y: 1.5, z: 0}
   crouchHeadBobAmount: 0.05
   crouchHeadBobSpeed: 4
-  walkHeadBobAmount: 0.1
-  walkHeadBobSpeed: 6
-  sprintHeadBobAmount: 0.3
-  sprintHeadBobSpeed: 15
+  walkHeadBobAmount: 0.3
+  walkHeadBobSpeed: 15
+  sprintHeadBobAmount: 0.5
+  sprintHeadBobSpeed: 25
   rayHitLocation: {x: 0, y: 0, z: 0}
   interactable: {fileID: 0}
 --- !u!136 &6246369875212649517

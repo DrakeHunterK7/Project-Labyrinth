@@ -8,6 +8,7 @@ using ColorUtility = UnityEngine.ColorUtility;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using Inventory_System;
+using UnityEditor.VersionControl;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -200,25 +201,35 @@ public class InventoryManager : MonoBehaviour
                 break;
             
             case ItemType.TaskItem:
-                
-                foreach (MonoBehaviour script in player.interactable.GetComponentsInChildren<MonoBehaviour>())
+                if (player.interactable == null)
                 {
-                    if (script is Interactable targetScript)
+                    MessageManager.instance.DisplayMessage("Nothing to use " + selectedItem.itemName + " on!", Color.yellow);
+                    playItemSound(false);
+                }
+                    
+                else
+                {
+                    foreach (MonoBehaviour script in player.interactable.GetComponentsInChildren<MonoBehaviour>())
                     {
-                        if (targetScript.Check(selectedItem.itemName))
+                        if (script is Interactable targetScript)
                         {
-                            targetScript.Unlock();
-                            playItemSound(true);
-                            Debug.Log("Used!");
-                            Remove(selectedItem);
-                            selectedItem = null;
-                        }
-                        else
-                        {
-                            playItemSound(false);
+                            if (targetScript.Check(selectedItem.itemName))
+                            {
+                                targetScript.Unlock();
+                                playItemSound(true);
+                                Debug.Log("Used!");
+                                Remove(selectedItem);
+                                selectedItem = null;
+                            }
+                            else
+                            {
+                                MessageManager.instance.DisplayMessage("Can't use " + selectedItem.itemName + " here!", Color.yellow);
+                                playItemSound(false);
+                            }
                         }
                     }
                 }
+                
 
                 break;
         }
