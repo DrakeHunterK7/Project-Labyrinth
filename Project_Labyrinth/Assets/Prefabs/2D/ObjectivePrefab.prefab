@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 7378108660328623461}
   - component: {fileID: 7378108660328623463}
   - component: {fileID: 7378108660328623460}
-  - component: {fileID: 1862191961232239983}
   m_Layer: 5
-  m_Name: MessageText
+  m_Name: ObjectivePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,23 +73,10 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Inventory is Full!
---- !u!114 &1862191961232239983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7378108660328623466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 405f28ef1c943394e86ac480c9efe95b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activeTime: 7

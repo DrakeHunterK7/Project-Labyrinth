@@ -6,6 +6,7 @@ using System;
 using Unity.VisualScripting;
 using ColorUtility = UnityEngine.ColorUtility;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using Inventory_System;
 
 public class InventoryManager : MonoBehaviour
@@ -21,6 +22,8 @@ public class InventoryManager : MonoBehaviour
     public int capacity;
 
     [SerializeField] public PlayerMovement player;
+    [SerializeField] public AudioClip error;
+    [SerializeField] public AudioSource itemSound;
 
     private void Awake()
     {
@@ -42,7 +45,7 @@ public class InventoryManager : MonoBehaviour
             item.script = item.prefab.GetComponent<ItemController>();
             item.script.Item = item;
 
-            //MessageManager.instance.DisplayMessage("Picked up " + item.name, Color.cyan); --- Removed this line cause it was causing issues without having real discernible purpose /// NICK
+            MessageManager.instance.DisplayMessage("Picked up " + item.name, Color.cyan); 
             return true;
         }
         else
@@ -134,23 +137,43 @@ public class InventoryManager : MonoBehaviour
             
         }
     }
+
+    void playItemSound(bool success)
+    {
+        
+        if(itemSound.isPlaying)
+            itemSound.Stop();
+        
+        if (!success)
+        {
+            itemSound.clip = error;
+            itemSound.Play();
+        }
+        else
+        {
+            itemSound.clip = selectedItem.useSound;
+            itemSound.Play();
+        }
+        
+        
+    }
     
     public void Use()
     {
-        Debug.Log("Trying to use....");
         switch (selectedItem.type)
         {
             case ItemType.Consumable:
                 
                 if (selectedItem.script.ApplyEffectOnPlayer(player))
                 {
+                    playItemSound(true);
                     Debug.Log("Used!");
                     Remove(selectedItem);
                     selectedItem = null;
                 }
                 else
                 {
-                    Debug.Log("Can't use!");
+                    playItemSound(false);
                 }
                
                 break;
@@ -174,6 +197,29 @@ public class InventoryManager : MonoBehaviour
                     player.EquipItem(selectedItem.prefab);
                 }
                 
+                break;
+            
+            case ItemType.TaskItem:
+                
+                foreach (MonoBehaviour script in player.interactable.GetComponentsInChildren<MonoBehaviour>())
+                {
+                    if (script is Interactable targetScript)
+                    {
+                        if (targetScript.Check(selectedItem.itemName))
+                        {
+                            targetScript.Unlock();
+                            playItemSound(true);
+                            Debug.Log("Used!");
+                            Remove(selectedItem);
+                            selectedItem = null;
+                        }
+                        else
+                        {
+                            playItemSound(false);
+                        }
+                    }
+                }
+
                 break;
         }
     }

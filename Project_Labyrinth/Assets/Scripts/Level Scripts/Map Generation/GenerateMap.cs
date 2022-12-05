@@ -376,7 +376,7 @@ public class GenerateMap : MonoBehaviour
         }
         // TEST PLAYER
 
-        player.transform.position = GameObject.FindWithTag("Waypoint").transform.position + Vector3.up * 5f;
+        //player.transform.position = GameObject.FindWithTag("Waypoint").transform.position + Vector3.up * 5f;
     }
 
     // Adds room to list of rooms and then spawns room in world space
