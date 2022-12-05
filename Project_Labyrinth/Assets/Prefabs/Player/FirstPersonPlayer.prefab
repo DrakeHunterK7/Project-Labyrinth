@@ -133,10 +133,10 @@ MonoBehaviour:
   crouchCenter: {x: 0, y: 1.5, z: 0}
   crouchHeadBobAmount: 0.05
   crouchHeadBobSpeed: 4
-  walkHeadBobAmount: 0.1
-  walkHeadBobSpeed: 6
-  sprintHeadBobAmount: 0.3
-  sprintHeadBobSpeed: 15
+  walkHeadBobAmount: 0.3
+  walkHeadBobSpeed: 15
+  sprintHeadBobAmount: 0.4
+  sprintHeadBobSpeed: 25
   rayHitLocation: {x: 0, y: 0, z: 0}
 --- !u!136 &6246369875212649517
 CapsuleCollider:
