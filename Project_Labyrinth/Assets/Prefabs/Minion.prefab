@@ -44,7 +44,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 10
-  m_Speed: 25
+  m_Speed: 10
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 360
@@ -72,7 +72,6 @@ MonoBehaviour:
   maxangle: 45
   animator: {fileID: 344138874015619875}
   waypointlist: []
-  patrolling: 1
 --- !u!1001 &344138874022948419
 PrefabInstance:
   m_ObjectHideFlags: 0

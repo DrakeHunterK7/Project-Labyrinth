@@ -14,9 +14,7 @@ public class Minion : MonoBehaviour
     private NavMeshAgent agent;
     public Animator animator;
     public List<GameObject> waypointlist = new List<GameObject>();
-    public bool patrolling = false;
-    public bool destroyed = false;
-    public bool nearenemy = false;
+    private bool done = false;
 
 
     // Start is called before the first frame update
@@ -30,38 +28,32 @@ public class Minion : MonoBehaviour
             waypointlist.Add(wp);
         }
         randomizeindex();
-        
-        animator.SetBool("ispatrolling", patrolling);
-        animator.SetBool("isnearenemy", nearenemy);
-        //patrolling = true;
+        agent.speed = 25;
     }
 
     // Update is called once per frame
     void Update()
     {
+        animator.SetFloat("speed", agent.speed);
         isinFOV = inFOV(transform, player, maxangle, maxradius);
 
         //if (isinFOV)
         if (isinFOV)
         {
-            
-            //agent.speed += 10;
+           
             agent.SetDestination(player.position);
-            if (Vector3.Distance(player.position, this.transform.position) < 10f)
+            if (Vector3.Distance(player.position, this.transform.position) < 10f && !done)
             {
-                nearenemy = true;
-
+                done = true;
+                animator.Play("Pounce");
                 playermodel.GetComponent<PlayerMovement>().smelly = true;
-                MessageManager.instance.DisplayMessage("You need a shower.", Color.red);
-                if (!destroyed)
-                {
-                    StartCoroutine("destroyminion");
-                }
+                MessageManager.instance.DisplayMessage("You have been marked.", Color.red);
+                MessageManager.instance.DisplayMessage("It's coming. Run.", Color.red);
+                StartCoroutine("destroyminion");
             }
         }
         else
         {
-            animator.Play("crawl");
             //agent.SetDestination(waypointlist[index].transform.position);
             agent.SetDestination(player.position);
         }
@@ -154,11 +146,8 @@ public class Minion : MonoBehaviour
 
     public IEnumerator destroyminion()
     {
-       
-            destroyed = true;
-            yield return new WaitForSeconds(1.25f);
-            Destroy(this.gameObject);
-        
+        yield return new WaitForSeconds(1.25f);
+        Destroy(this.gameObject);
     }
 }
 
