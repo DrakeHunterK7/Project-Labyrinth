@@ -316,7 +316,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         {
             rayHitLocation = hit.point;
             hoveredPickup = hit.collider.gameObject.GetComponent<ItemPickup>();
-            if (hit.collider.gameObject.CompareTag("Interactable"))
+            if (hit.collider.CompareTag("Interactable"))
             {
                 interactable = hit.collider.gameObject;
             }
@@ -335,6 +335,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
                 itemBox.transform.localScale = new Vector2 (1f, 1f);
                 crosshair.color = Color.green;
                 itemBox_text.text = interactable.name;
+                itemBox_transform.position = new Vector3(Screen.width/2,Screen.height/2, 0);
                 // var itemPositionWorldToCanvas = mainCam.WorldToScreenPoint(interactable.transform.position);
                 // itemBox_transform.position = itemPositionWorldToCanvas;
             }
@@ -353,6 +354,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             itemBox_text.text = "";
             crosshair.color = Color.white;
             interactable = null;
+            
         }
     }
 
