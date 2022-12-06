@@ -109,7 +109,6 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     {
         playerCollider.center = controller.center;
         playerCollider.height = controller.height;
-        Debug.Log("Player pos:" + transform.position);
         if (!isPlayerLeaning)
         {
             float x = (Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0);
@@ -328,8 +327,8 @@ public class PlayerMovement : MonoBehaviour, IDamageable
                 itemBox.transform.localScale = new Vector2 (1f, 1f);
                 crosshair.color = Color.green;
                 itemBox_text.text = interactable.name;
-                var itemPositionWorldToCanvas = mainCam.WorldToScreenPoint(interactable.transform.position);
-                itemBox_transform.position = itemPositionWorldToCanvas;
+                // var itemPositionWorldToCanvas = mainCam.WorldToScreenPoint(interactable.transform.position);
+                // itemBox_transform.position = itemPositionWorldToCanvas;
             }
             else
             {
