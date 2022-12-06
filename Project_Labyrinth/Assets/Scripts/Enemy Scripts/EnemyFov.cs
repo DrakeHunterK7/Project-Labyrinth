@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyFov : MonoBehaviour
+public class EnemyFov : MonoBehaviour, IHearing
 {
     public Transform player;
     private int index = 0;
@@ -16,6 +16,11 @@ public class EnemyFov : MonoBehaviour
     private bool attack = false;
     private float seeTime = 7f;
     private bool sawPlayer = false;
+    private bool heard = false;
+    private Vector3 soundposition = Vector3.zero;
+    private float checkingTime = 7f;
+    private float patrolStopTime = 7f;
+    public Vector3 patrolLocation = Vector3.zero;
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +31,7 @@ public class EnemyFov : MonoBehaviour
         {
             waypointlist.Add(wp);
         }
-        randomizeindex();
+        //randomizeindex();
     }
 
     // Update is called once per frame
@@ -39,6 +44,8 @@ public class EnemyFov : MonoBehaviour
 
         if(isinFOV)
         {
+            patrolStopTime = 7f;
+            checkingTime = 7f;
             seeTime = 7f;
             sawPlayer = true;
             agent.speed = 25;
@@ -53,27 +60,63 @@ public class EnemyFov : MonoBehaviour
             }
                 
         }
+        else if (heard)
+        {
+            agent.speed = 25;
+            agent.SetDestination(soundposition);
+            
+            if (Vector3.Distance(soundposition, this.transform.position) < 2f)
+            {
+                Debug.Log("At soundpos");
+                checkingTime -= Time.deltaTime;
+
+                if (checkingTime <= 0f)
+                {
+                    patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                    agent.speed = 10;
+                    heard = false;
+                    checkingTime = 7f;
+                }
+            }
+        }
         else
         {
             attack = false;
             if (sawPlayer)
+            {
                 seeTime -= Time.deltaTime;
 
-            if (seeTime <= 0)
-            {
-                sawPlayer = false;
-                agent.speed = 10;
-                agent.SetDestination(waypointlist[index].transform.position);
+                if (seeTime <= 0)
+                {
+                    sawPlayer = false;
+                    agent.speed = 10;
+                
+                }
             }
-            
-            if (index > waypointlist.Count - 1)
+            else
             {
-                index = 0;
+                if (Vector3.Distance(patrolLocation, this.transform.position) < 5f)
+                {
+                    patrolStopTime -= Time.deltaTime;
+
+                    if (patrolStopTime <= 0f)
+                    {
+                        patrolStopTime = 7f;
+                        patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                    }
+                }
+                else
+                {
+                    agent.SetDestination(patrolLocation);
+                }
             }
-            trackDistance();
-            Debug.Log(waypointlist[index].transform.position);
         }
-        
+    }
+
+    public void HeardSound(Vector3 soundPosition)
+    {
+        soundposition = soundPosition;
+        heard = true;
     }
 
     private void OnDrawGizmos()
@@ -96,6 +139,9 @@ public class EnemyFov : MonoBehaviour
             Gizmos.color = Color.green;
 
         Gizmos.DrawRay(transform.position, (player.position - transform.position).normalized * maxradius);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(transform.position, (patrolLocation - transform.position));
 
         Gizmos.color = Color.black;
         Gizmos.DrawRay(transform.position, transform.forward * maxradius);
