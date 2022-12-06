@@ -265,20 +265,19 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             sprintSound.Stop();
         }
 
-        //bool hit = Physics.Raycast(transform.position, transform.forward, out RaycastHit hitInfo);
-        //Collider collider = hitInfo.collider;
-        //if (collider != null)
-        //{
-            //if (collider.gameObject.CompareTag("Enemy"))
-            //{
-                //if (!heartBeatSound.isPlaying && !breatheSound.isPlaying)
-                //{
-                    //heartBeatSound.Play();
-                    //breatheSound.Play();
-                    //StartCoroutine(enemySpotted());
-                //}
-            //}
-        //}
+        RaycastHit hit;
+        if (Physics.Raycast(mainCam.transform.position, mainCam.transform.forward, out hit))
+        {
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                if (!heartBeatSound.isPlaying && !breatheSound.isPlaying)
+                {
+                    heartBeatSound.Play();
+                    breatheSound.Play();
+                    StartCoroutine(enemySpotted());
+                }
+            }
+        }
     }
 
     private IEnumerator enemySpotted()
