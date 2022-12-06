@@ -33,7 +33,7 @@ public class EnemyFov : MonoBehaviour
     void Update()
     {
         isinFOV = inFOV(transform, player, maxangle, maxradius);
-        animator.SetFloat("speed", agent.speed);
+        animator.SetFloat("speed", agent.velocity.magnitude);
         animator.SetBool("attack", attack);
 
 
