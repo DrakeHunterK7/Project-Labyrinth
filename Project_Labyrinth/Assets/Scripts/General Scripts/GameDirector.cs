@@ -23,9 +23,6 @@ public class GameDirector : MonoBehaviour
     void Start()
     {
         MessageManager.instance.AddObjective("THE ESCAPE: Find a way to escape the lab", Color.yellow);
-
-        var randomLocation = GameObject.FindWithTag("PlayerStartPoint").transform.position;
-        player.transform.position = randomLocation + Vector3.up * 4f;
     }
 
     public void IncreaseLevel()
