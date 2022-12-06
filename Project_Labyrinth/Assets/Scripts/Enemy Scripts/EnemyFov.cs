@@ -11,7 +11,9 @@ public class EnemyFov : MonoBehaviour
     private float maxradius = 75f;
     private bool isinFOV = false;
     private NavMeshAgent agent;
+    public Animator animator;
     public List<GameObject> waypointlist = new List<GameObject>();
+    private bool attack = false;
 
 
     // Start is called before the first frame update
@@ -30,16 +32,27 @@ public class EnemyFov : MonoBehaviour
     void Update()
     {
         isinFOV = inFOV(transform, player, maxangle, maxradius);
+        animator.SetFloat("speed", agent.speed);
+        animator.SetBool("attack", attack);
 
         //if (isinFOV)
         if(isinFOV)
         {
+            agent.speed = 25;
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
-                Destroy(player.gameObject);
+            {
+                attack = true;
+            }
+            else
+            {
+                attack = false;
+            }
+                
         }
         else
         {
+            agent.speed = 10;
             agent.SetDestination(waypointlist[index].transform.position);
         }
         if (index > waypointlist.Count - 1)
@@ -118,7 +131,8 @@ public class EnemyFov : MonoBehaviour
     {
         if(Vector3.Magnitude(waypointlist[index].transform.position - transform.position) < 2f)
         {
-            randomizeindex();
+            //agent.speed = 0;
+            StartCoroutine("randomizeindex1");
         }
 
         
@@ -126,6 +140,16 @@ public class EnemyFov : MonoBehaviour
 
     private void randomizeindex()
     {
+        index = Random.Range(0, waypointlist.Count - 1);
+    }
+
+    private IEnumerator randomizeindex1()
+    {
+        yield return new WaitForSeconds(5f);
+        if(agent.speed == 0)
+        {
+            agent.speed = 10;
+        }
         index = Random.Range(0, waypointlist.Count - 1);
     }
 
