@@ -14,6 +14,8 @@ public class EnemyFov : MonoBehaviour
     public Animator animator;
     public List<GameObject> waypointlist = new List<GameObject>();
     private bool attack = false;
+    private float seeTime = 7f;
+    private bool sawPlayer = false;
 
     // Start is called before the first frame update
     void Start()
@@ -37,8 +39,8 @@ public class EnemyFov : MonoBehaviour
 
         if(isinFOV)
         {
-            //animator.Play("Caught");
-           // animator.SetFloat("speed", 25f);
+            seeTime = 7f;
+            sawPlayer = true;
             agent.speed = 25;
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
@@ -53,16 +55,25 @@ public class EnemyFov : MonoBehaviour
         }
         else
         {
-            //animator.SetFloat("speed", 10f);
-            agent.speed = 10;
-            agent.SetDestination(waypointlist[index].transform.position);
+            attack = false;
+            if (sawPlayer)
+                seeTime -= Time.deltaTime;
+
+            if (seeTime <= 0)
+            {
+                sawPlayer = false;
+                agent.speed = 10;
+                agent.SetDestination(waypointlist[index].transform.position);
+            }
+            
+            if (index > waypointlist.Count - 1)
+            {
+                index = 0;
+            }
+            trackDistance();
+            Debug.Log(waypointlist[index].transform.position);
         }
-        if (index > waypointlist.Count - 1)
-        {
-            index = 0;
-        }
-        trackDistance();
-        Debug.Log(waypointlist[index].transform.position);
+        
     }
 
     private void OnDrawGizmos()
@@ -79,7 +90,7 @@ public class EnemyFov : MonoBehaviour
         Gizmos.DrawRay(transform.position, fovLine1);
         Gizmos.DrawRay(transform.position, fovLine2);
 
-        if (!isinFOV)
+        if (!sawPlayer)
             Gizmos.color = Color.red;
         else
             Gizmos.color = Color.green;
