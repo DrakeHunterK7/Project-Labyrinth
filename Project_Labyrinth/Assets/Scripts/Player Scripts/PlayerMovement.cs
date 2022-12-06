@@ -241,7 +241,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             isWalking = false;
         }
 
-        if (isWalking || isCrouching)
+        if (isWalking && !isCrouching)
         {
             if (!walkSound.isPlaying)
             {
@@ -265,20 +265,20 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             sprintSound.Stop();
         }
 
-        bool hit = Physics.Raycast(transform.position, transform.forward, out RaycastHit hitInfo);
-        Collider collider = hitInfo.collider;
-        if (collider != null)
-        {
-            if (collider.gameObject.CompareTag("Enemy"))
-            {
-                if (!heartBeatSound.isPlaying && !breatheSound.isPlaying)
-                {
-                    heartBeatSound.Play();
-                    breatheSound.Play();
-                    StartCoroutine(enemySpotted());
-                }
-            }
-        }
+        //bool hit = Physics.Raycast(transform.position, transform.forward, out RaycastHit hitInfo);
+        //Collider collider = hitInfo.collider;
+        //if (collider != null)
+        //{
+            //if (collider.gameObject.CompareTag("Enemy"))
+            //{
+                //if (!heartBeatSound.isPlaying && !breatheSound.isPlaying)
+                //{
+                    //heartBeatSound.Play();
+                    //breatheSound.Play();
+                    //StartCoroutine(enemySpotted());
+                //}
+            //}
+        //}
     }
 
     private IEnumerator enemySpotted()
