@@ -76,7 +76,7 @@ public class GenerateMap : MonoBehaviour
     bool startingRoomAdded;
     bool endingRoomAdded;
 
-    [SerializeField] private GameObject player;
+    private GameObject player;
 
 
     // other
@@ -113,6 +113,7 @@ public class GenerateMap : MonoBehaviour
 
     void Start()
     {
+        player = GameObject.FindWithTag("Player");
         CreateMap();
     }
 
@@ -374,9 +375,8 @@ public class GenerateMap : MonoBehaviour
             surface.BuildNavMesh();
             break;
         }
-        // TEST PLAYER
 
-        player.transform.position = GameObject.FindWithTag("Waypoint").transform.position + Vector3.up * 5f;
+        player.transform.position = GameObject.FindWithTag("PlayerStartPoint").transform.position + Vector3.up * 5f;
     }
 
     // Adds room to list of rooms and then spawns room in world space

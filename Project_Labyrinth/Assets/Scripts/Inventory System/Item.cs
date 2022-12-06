@@ -17,6 +17,7 @@ public class Item : ScriptableObject
     public EffectLength effectLength;
     public float effectDuration;
     public ItemController script;
+    public AudioClip useSound;
 
     private void OnEnable()
     {

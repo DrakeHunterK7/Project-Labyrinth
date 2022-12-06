@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7378108660328623461}
   - component: {fileID: 7378108660328623463}
   - component: {fileID: 7378108660328623460}
-  - component: {fileID: 631032013888505453}
+  - component: {fileID: 1862191961232239983}
   m_Layer: 5
   m_Name: MessageText
   m_TagString: Untagged
@@ -81,7 +81,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Inventory is Full!
---- !u!114 &631032013888505453
+--- !u!114 &1862191961232239983
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,4 +93,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 405f28ef1c943394e86ac480c9efe95b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 3
+  activeTime: 7

@@ -80,16 +80,20 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     private bool isPlayerLeaning = false;
     
-
     private Vector3 gravity;
     
     ItemPickup hoveredPickup;
+    public GameObject interactable;
     private Image crosshair;
     private GameObject itemBox;
     private RectTransform itemBox_transform;
     private Text itemBox_text;
 
-
+    void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
+    
     void Start()
     {
         Cursor.visible = false;
@@ -113,7 +117,6 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
             playerCollider.center = controller.center;
         playerCollider.height = controller.height;
-        Debug.Log("Player pos:" + transform.position);
         if (!isPlayerLeaning)
         {
             float x = (Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0);
@@ -313,6 +316,12 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         {
             rayHitLocation = hit.point;
             hoveredPickup = hit.collider.gameObject.GetComponent<ItemPickup>();
+            if (hit.collider.gameObject.CompareTag("Interactable"))
+            {
+                interactable = hit.collider.gameObject;
+            }
+            
+            
             if (hoveredPickup != null)
             {
                 itemBox.transform.localScale = new Vector2 (1f, 1f);
@@ -321,7 +330,14 @@ public class PlayerMovement : MonoBehaviour, IDamageable
                 var itemPositionWorldToCanvas = mainCam.WorldToScreenPoint(hoveredPickup.transform.position);
                 itemBox_transform.position = itemPositionWorldToCanvas;
             }
-            
+            else if (interactable != null)
+            {
+                itemBox.transform.localScale = new Vector2 (1f, 1f);
+                crosshair.color = Color.green;
+                itemBox_text.text = interactable.name;
+                // var itemPositionWorldToCanvas = mainCam.WorldToScreenPoint(interactable.transform.position);
+                // itemBox_transform.position = itemPositionWorldToCanvas;
+            }
             else
             {
                 itemBox_text.text = "";
@@ -336,6 +352,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             itemBox.transform.localScale = Vector2.zero;
             itemBox_text.text = "";
             crosshair.color = Color.white;
+            interactable = null;
         }
     }
 
@@ -363,7 +380,11 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     void PickupItem()
     {
-        if (hoveredPickup != null)
+        if (interactable != null)
+        {
+            interactable.GetComponent<Interactable>()?.DoAction();
+        }
+        else if (hoveredPickup != null)
         {
             if (inventoryManager.Add(hoveredPickup.Item))
             {
@@ -373,7 +394,6 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             {
                 MessageManager.instance.DisplayMessage("Inventory is Full!", Color.yellow);
             }
-            
         }
     }
     
@@ -383,6 +403,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         {
             inventoryManager.Use();
         }
+        
     }
 
     public void EquipItem(GameObject itemToEquip)

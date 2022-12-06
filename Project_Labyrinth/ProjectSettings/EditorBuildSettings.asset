@@ -6,12 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Map Generation Testing 2.unity
-    guid: 5c39a47ab0b2ad04bb410ab1e779fbce
+    path: Assets/Scenes/SampleScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
     path: Assets/Scenes/Map Generation Testing.unity
     guid: b07b9f2243d62c54abb03cf21733b542
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/Map Generation Testing 1.unity
+    guid: 6c0d9b2bd00f6014f9c202f24759d39f
   m_configObjects: {}
