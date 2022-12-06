@@ -16,6 +16,7 @@ TagManager:
   - Interactable
   - Door
   - PlayerStartPoint
+  - Enemy
   layers:
   - Default
   - TransparentFX

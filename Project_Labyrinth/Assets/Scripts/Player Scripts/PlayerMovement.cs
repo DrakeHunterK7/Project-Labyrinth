@@ -73,6 +73,13 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private Vector3 cameraInitialPosition;
     public Vector3 rayHitLocation;
 
+
+    [Header("Audio Parameters")]
+    [SerializeField] private AudioSource walkSound;
+    [SerializeField] private AudioSource sprintSound;
+    [SerializeField] private AudioSource heartBeatSound;
+    [SerializeField] private AudioSource breatheSound;
+
     private Vector3 velocity = Vector3.zero;
 
     private bool isPlayerLeaning = false;
@@ -224,6 +231,62 @@ public class PlayerMovement : MonoBehaviour, IDamageable
                 cameraInitialPosition = mainCam.transform.position;
             }
         }
+
+        if (Input.GetAxis("Horizontal") == 1 || Input.GetAxis("Vertical") == 1 && !isSprinting)
+        {
+            isWalking = true;
+        }
+        else
+        {
+            isWalking = false;
+        }
+
+        if (isWalking || isCrouching)
+        {
+            if (!walkSound.isPlaying)
+            {
+                walkSound.Play();
+            }
+        }
+        else
+        {
+            walkSound.Stop();
+        }
+
+        if (isSprinting)
+        {
+            if (!sprintSound.isPlaying)
+            {
+                sprintSound.Play();
+            }
+        }
+        else
+        {
+            sprintSound.Stop();
+        }
+
+        bool hit = Physics.Raycast(transform.position, transform.forward, out RaycastHit hitInfo);
+        Collider collider = hitInfo.collider;
+        if (collider != null)
+        {
+            if (collider.gameObject.CompareTag("Enemy"))
+            {
+                if (!heartBeatSound.isPlaying && !breatheSound.isPlaying)
+                {
+                    heartBeatSound.Play();
+                    breatheSound.Play();
+                    StartCoroutine(enemySpotted());
+                }
+            }
+        }
+    }
+
+    private IEnumerator enemySpotted()
+    {
+        yield return new WaitForSeconds(5);
+        heartBeatSound.Stop();
+        breatheSound.Stop();
+        yield break;
     }
 
     private IEnumerator HandleCrouch()
