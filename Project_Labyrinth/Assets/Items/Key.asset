@@ -16,10 +16,10 @@ MonoBehaviour:
   itemName: Key
   value: 1
   icon: {fileID: 21300000, guid: be340a165cb9c8d4cb50f1deeb51d4ea, type: 3}
-  prefab: {fileID: 1450602116203488, guid: 40b7e4c60e2fd894c8e2ce3afdeb1759, type: 3}
+  prefab: {fileID: 1987713744733760, guid: 7d672e45c18d9ad40a1afbc10e47df05, type: 3}
   type: 2
   playerAttributeAffected: 0
   effectLength: 0
   effectDuration: 0
-  script: {fileID: 0}
+  script: {fileID: 742650507060547845, guid: 7d672e45c18d9ad40a1afbc10e47df05, type: 3}
   useSound: {fileID: 8300000, guid: 4f500a7a19c1f784b85af9517ce76d9f, type: 3}

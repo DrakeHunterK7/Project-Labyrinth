@@ -15,7 +15,6 @@ public class EnemyFov : MonoBehaviour
     public List<GameObject> waypointlist = new List<GameObject>();
     private bool attack = false;
 
-
     // Start is called before the first frame update
     void Start()
     {
@@ -35,9 +34,11 @@ public class EnemyFov : MonoBehaviour
         animator.SetFloat("speed", agent.speed);
         animator.SetBool("attack", attack);
 
-        //if (isinFOV)
+
         if(isinFOV)
         {
+            //animator.Play("Caught");
+           // animator.SetFloat("speed", 25f);
             agent.speed = 25;
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
@@ -52,6 +53,7 @@ public class EnemyFov : MonoBehaviour
         }
         else
         {
+            //animator.SetFloat("speed", 10f);
             agent.speed = 10;
             agent.SetDestination(waypointlist[index].transform.position);
         }
