@@ -121,7 +121,18 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             camYRotation += mouseX * cameraSpeed;
             camXRotation = Mathf.Clamp(camXRotation, -90, 90);
 
-            mainCam.transform.eulerAngles = new Vector3(camXRotation, camYRotation, 0f);
+            if(!Pause_Menu.isPaused)
+            {
+                mainCam.transform.eulerAngles = new Vector3(camXRotation, camYRotation, 0f);
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            
 
             gravity = Vector3.zero;
             if (controller.isGrounded == false && canCrouch)
@@ -155,7 +166,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             }
         }
 
-        FPSRay();
+            FPSRay();
         UpdateCollarLight();
 
         if (Input.GetKeyDown(KeyCode.Mouse1))
