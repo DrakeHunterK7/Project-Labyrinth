@@ -114,6 +114,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4360f14057f1f7d49b229d17cad64d6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  throwForce: 25
+  bottle: {fileID: 1216505430168376}
 --- !u!114 &-3848801889690380091
 MonoBehaviour:
   m_ObjectHideFlags: 0

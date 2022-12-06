@@ -8,7 +8,8 @@ public class Boss : MonoBehaviour
     public float bossdamage;
     private GameObject player;
     private NavMeshAgent agent;
-    private bool coroutine = false;
+    private bool heard = false;
+    public Vector3 soundposition = Vector3.zero;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,14 +30,34 @@ public class Boss : MonoBehaviour
 
             Destroy(player);
         }
+        if (heardsound())
+        {
+            agent.SetDestination(soundposition);
+            Debug.Log("Sound Heard");
+            if (Vector3.Distance(soundposition, this.transform.position) < 2f)
+            {
+
+                heard = false;
+                Debug.Log("At soundpos");
+            }
+        }
+       
+
 
 
     }
 
     public IEnumerator damageplayer()
     {
-        coroutine = true;
+        
         yield return new WaitForSeconds(1f);
         player.GetComponent<PlayerMovement>().Damage(bossdamage);
+    }
+
+    public bool heardsound()
+
+    {
+        heard = true;
+        return heard;
     }
 }

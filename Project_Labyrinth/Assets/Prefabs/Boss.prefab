@@ -181,9 +181,10 @@ GameObject:
   - component: {fileID: 6511052753761535856}
   - component: {fileID: 3163886911315717114}
   - component: {fileID: 4119362670983561989}
+  - component: {fileID: 4974768149640935098}
   m_Layer: 0
   m_Name: Boss
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -239,6 +240,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bossdamage: 50
+  soundposition: {x: 0, y: 0, z: 0}
+--- !u!135 &4974768149640935098
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5841229564029263306}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.8983095
+  m_Center: {x: 0.10075408, y: 1.2062535, z: 0}
 --- !u!1 &6760288447750257891
 GameObject:
   m_ObjectHideFlags: 0
