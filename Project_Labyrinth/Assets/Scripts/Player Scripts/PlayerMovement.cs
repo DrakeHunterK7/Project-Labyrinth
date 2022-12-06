@@ -53,6 +53,9 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private bool isWalking;
     private bool isSprinting;
     private bool isCrouching;
+
+    [HideInInspector]
+    public bool smelly = false;
     
     [Header("Crouch Parameters")]
     [SerializeField] private float crouchTime = 0.25f;
@@ -107,7 +110,12 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
-        playerCollider.center = controller.center;
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            smelly = false;
+        }
+
+            playerCollider.center = controller.center;
         playerCollider.height = controller.height;
         if (!isPlayerLeaning)
         {
