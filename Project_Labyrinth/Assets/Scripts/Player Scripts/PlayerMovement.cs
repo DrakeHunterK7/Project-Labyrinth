@@ -124,7 +124,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             smelly = false;
         }
 
-            playerCollider.center = controller.center;
+        playerCollider.center = controller.center;
         playerCollider.height = controller.height;
         if (!isPlayerLeaning)
         {
@@ -183,13 +183,13 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             }
         }
 
-            FPSRay();
+        FPSRay();
         UpdateCollarLight();
 
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             PickupItem();
-            pickupSound.Play();
+            
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -469,6 +469,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             if (inventoryManager.Add(hoveredPickup.Item))
             {
                 Destroy(hoveredPickup.gameObject);
+                pickupSound.Play();
             }
             else
             {
