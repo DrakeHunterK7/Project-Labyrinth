@@ -161,7 +161,6 @@ Transform:
   - {fileID: 1259849470}
   - {fileID: 102117677}
   - {fileID: 9111340714035051}
-  - {fileID: 1721779846}
   m_Father: {fileID: 460784497338372640}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
