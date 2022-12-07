@@ -232,7 +232,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             }
         }
 
-        if (Input.GetAxis("Horizontal") == 1 || Input.GetAxis("Vertical") == 1 && !isSprinting)
+        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0 && !isSprinting)
         {
             isWalking = true;
         }
