@@ -20,13 +20,13 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0.69803923, g: 0.69803923, b: 0.69803923, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1750,7 +1750,7 @@ MonoBehaviour:
   PrimEdgeCycleChance: 100
   playerPrefab: {fileID: 0}
   roomPrefabs:
-  - {fileID: 8703959907204731751, guid: 3d68ab37716d39946b160391cfed7f40, type: 3}
+  - {fileID: 8703959907204731751, guid: d91e0e1120998f747affd8c8d0e39266, type: 3}
   - {fileID: 8703959907204731751, guid: 3bb8dd3a00ed2d449809297d02fa7a2d, type: 3}
   - {fileID: 5068355646923787226, guid: d6dece7a39a242c428f63904feb6388b, type: 3}
   - {fileID: 5068355646923787226, guid: 18ed11b80dbebe945a070375ce922d56, type: 3}
