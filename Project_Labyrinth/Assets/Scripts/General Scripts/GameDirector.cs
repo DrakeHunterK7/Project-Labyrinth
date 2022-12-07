@@ -13,6 +13,7 @@ public class GameDirector : MonoBehaviour
     [SerializeField] private GameObject player;
     private PlayerMovement playerScript;
     public bool isLoadingNextLevel = false;
+    public bool isPlayerDead = false;
     
     private void Awake()
     {

@@ -37,6 +37,8 @@ public class MainMenuManager : MonoBehaviour
     
     private float bgFadeTime = 3f;
 
+    private float fadeDirection = 1;
+
     private int lineCount = 0;
 
     public Button skipButton;
@@ -62,27 +64,28 @@ public class MainMenuManager : MonoBehaviour
         }
         if (line1Fade)
         {
-            line1FadeTime -= Time.deltaTime;
+            line1FadeTime = Mathf.Clamp(line1FadeTime -= fadeDirection*Time.deltaTime, 0, 2);
             line1.color = Color.Lerp(Color.clear, Color.white, 1 - (line1FadeTime / 2f));
         }
         if (line2Fade)
         {
-            line2FadeTime -= Time.deltaTime;
+            line2FadeTime = Mathf.Clamp(line2FadeTime -= fadeDirection*Time.deltaTime, 0, 2);
             line2.color = Color.Lerp(Color.clear, Color.white, 1 - (line2FadeTime / 2f));
         }
         if (line3Fade)
         {
-            line3FadeTime -= Time.deltaTime;
+            line3FadeTime = Mathf.Clamp(line3FadeTime -= fadeDirection*Time.deltaTime, 0, 2);
             line3.color = Color.Lerp(Color.clear, Color.white, 1 - (line3FadeTime / 2f));
         }
         if (line4Fade)
         {
-            line4FadeTime -= Time.deltaTime;
+            line4FadeTime = Mathf.Clamp(line4FadeTime -= fadeDirection*Time.deltaTime, 0, 2);
             line4.color = Color.Lerp(Color.clear, Color.white, 1 - (line4FadeTime / 2f));
         }
         if (line5Fade)
         {
-            line5FadeTime -= Time.deltaTime;
+            line5FadeTime = Mathf.Clamp(line5FadeTime -= fadeDirection*Time.deltaTime, 0, 2);
+            Mathf.Clamp(line5FadeTime, 0, 2);
             line5.color = Color.Lerp(Color.clear, Color.red, 1 - (line5FadeTime / 2f));
         }
     }
@@ -141,6 +144,11 @@ public class MainMenuManager : MonoBehaviour
         
         yield return new WaitForSeconds(5f);
         line5Fade = true;
+        
+        yield return new WaitForSeconds(5f);
+        fadeDirection = -1;
+        skipButton.gameObject.SetActive(false);
+
 
         yield return new WaitForSeconds(5f);
         StartGame();

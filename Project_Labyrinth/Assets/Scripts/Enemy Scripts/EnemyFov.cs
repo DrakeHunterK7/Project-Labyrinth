@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -33,12 +34,12 @@ public class EnemyFov : MonoBehaviour, IHearing
             waypointlist.Add(wp);
         }
 
-
         randomizeindex();
 
         patrolLocation = waypointlist[index].transform.position;
         //randomizeindex();
     }
+    
 
     // Update is called once per frame
     void Update()
@@ -57,7 +58,7 @@ public class EnemyFov : MonoBehaviour, IHearing
             sawPlayer = true;
             agent.speed = 20;
             agent.SetDestination(player.position);
-            if (Vector3.Distance(player.position, this.transform.position) < 10f)
+            if (Vector3.Distance(player.position, this.transform.position) < 7f)
             {
                 attack = true;
             }
@@ -72,7 +73,7 @@ public class EnemyFov : MonoBehaviour, IHearing
             agent.speed = 20;
             agent.SetDestination(soundposition);
             
-            if (Vector3.Distance(soundposition, this.transform.position) < 2f)
+            if (Vector3.Distance(soundposition, this.transform.position) < 10f)
             {
                 Debug.Log("At soundpos");
                 checkingTime -= Time.deltaTime;
@@ -129,7 +130,8 @@ public class EnemyFov : MonoBehaviour, IHearing
     public void HeardSound(Vector3 soundPosition)
     {
         if (sawPlayer) return;
-        
+        if(!heard)
+            MessageManager.instance.DisplayMessage("It heard you!", Color.red);
         soundposition = soundPosition;
         heard = true;
     }
@@ -191,19 +193,35 @@ public class EnemyFov : MonoBehaviour, IHearing
                             }
                                 
                         }
+                        else
+                        {
+                            if (Vector3.Distance(checkingObject.position, target.position) < 20f)
+                            {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
         }
-
-
-
         return false;
     }
 
     private void randomizeindex()
     {
         index = Random.Range(0, waypointlist.Count - 1);
+    }
+
+    void DamagePlayer()
+    {
+        var player = GameObject.FindWithTag("Player");
+        if (Vector3.Distance(player.transform.position, transform.position) < 10f)
+        {
+            if (player.GetComponent<MonoBehaviour>() is IDamageable script)
+            {
+                script.Damage(10f);
+            }
+        }
     }
 
 }

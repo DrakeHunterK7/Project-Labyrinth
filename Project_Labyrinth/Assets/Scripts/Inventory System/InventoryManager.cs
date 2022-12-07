@@ -33,6 +33,7 @@ public class InventoryManager : MonoBehaviour
 
     void Update()
     {
+        if (GameDirector.instance.isPlayerDead || GameDirector.instance.isLoadingNextLevel) return;
         InventoryScrolling();
     }
 

@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Timers;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.XR;
@@ -85,6 +88,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     [SerializeField] private AudioSource sprintSound;
     [SerializeField] private AudioSource heartBeatSound;
     [SerializeField] private AudioSource breatheSound;
+    [SerializeField] private AudioSource deathSound;
 
     private Vector3 velocity = Vector3.zero;
 
@@ -100,9 +104,23 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private Text itemBox_text;
     [SerializeField] private UnityEngine.UI.Image bloodOverlay;
     [SerializeField] private UnityEngine.UI.Image fadeOverlay;
+    [SerializeField] private UnityEngine.UI.Image deathOverlay;
+    [SerializeField] private UnityEngine.UI.Image deathBloodOverlay;
     private float overlayDisappearTime = 0f;
     public float fadeTime = 0f;
+    public float deathFadeTime = 0f;
+    public float deathFadeTime1 = 0f;
     public int fadeDirection = 1;
+
+    
+    [SerializeField] private Button quitgameBtn;
+    [SerializeField] private Button mainmenuBtn;
+    [SerializeField] private TextMeshProUGUI deathTitle;
+    [SerializeField] private TextMeshProUGUI deathSubtitle;
+
+    private bool deathTitleShow = false;
+    private bool deathSubtitleShow = false;
+    
 
     void Awake()
     {
@@ -130,6 +148,22 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             smelly = false;
         }
 
+        if (deathTitleShow)
+        {
+            deathFadeTime += Time.deltaTime;
+            deathTitle.color = Color.Lerp(Color.clear, Color.red, deathFadeTime / 3f);
+        }
+
+        if (deathSubtitleShow)
+        {
+            deathFadeTime1 += Time.deltaTime;
+            deathSubtitle.color = Color.Lerp(Color.clear, Color.white, deathFadeTime1 / 3f);
+        }
+            
+        
+
+        if (GameDirector.instance.isPlayerDead) return;
+        
         if(overlayDisappearTime > 0)
             overlayDisappearTime -= Time.deltaTime;
         bloodOverlay.color = Color.Lerp(Color.clear, Color.white, overlayDisappearTime / 3f);
@@ -200,7 +234,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             }
         }
 
-            FPSRay();
+        FPSRay();
         UpdateCollarLight();
 
         if (Input.GetKeyDown(KeyCode.Mouse1))
@@ -335,7 +369,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     public void CreateSound()
     {
-        if (isCrouching) return;
+        if (isCrouching || controller.velocity.magnitude < walkSpeed-5f) return;
         
         Collider[] colliders = Physics.OverlapSphere(transform.position, soundRadius);
         foreach(var collider in colliders)
@@ -395,6 +429,8 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     
     public void Damage(float damage)
     {
+        if (GameDirector.instance.isLoadingNextLevel || GameDirector.instance.isPlayerDead) return;
+        
         health -= damage;
         overlayDisappearTime = 3f;
         if(health <= 0)
@@ -425,7 +461,14 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     void Death()
     {
-        
+        GameDirector.instance.isPlayerDead = true;
+        deathOverlay.gameObject.SetActive(true);
+        walkSound.Stop();
+        sprintSound.Stop();
+        breatheSound.Stop();
+        heartBeatSound.Stop();
+        deathSound.Play();
+        StartCoroutine("StartDeathAnimation");
     }
 
     void UpdateCollarLight()
@@ -592,6 +635,31 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             var newPosition = cameraInitialPosition + direction * mainCam.transform.right * 2f;
             mainCam.transform.position = Vector3.SmoothDamp(mainCam.transform.position, newPosition, ref velocity, 0.1f);
         }
+    }
+
+    IEnumerator StartDeathAnimation()
+    {
+       Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        yield return new WaitForSeconds(5f);
+        deathTitleShow = true;
+        yield return new WaitForSeconds(5f);
+        deathSubtitleShow = true;
+        yield return new WaitForSeconds(5f);
+        quitgameBtn.gameObject.SetActive(true);
+        mainmenuBtn.gameObject.SetActive(true);
+    }
+
+    public void LoadMainMenu()
+    {
+        Destroy(this.gameObject);
+        Destroy(GameDirector.instance.gameObject);
+        SceneManager.LoadScene("Main_Menu");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
     
 }
