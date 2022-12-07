@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Timers;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -56,6 +57,8 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     [HideInInspector]
     public bool smelly = false;
+
+    private float soundRadius = 0f;
     
     [Header("Crouch Parameters")]
     [SerializeField] private float crouchTime = 0.25f;
@@ -95,6 +98,11 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private GameObject itemBox;
     private RectTransform itemBox_transform;
     private Text itemBox_text;
+    [SerializeField] private UnityEngine.UI.Image bloodOverlay;
+    [SerializeField] private UnityEngine.UI.Image fadeOverlay;
+    private float overlayDisappearTime = 0f;
+    public float fadeTime = 0f;
+    public int fadeDirection = 1;
 
     void Awake()
     {
@@ -122,8 +130,19 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             smelly = false;
         }
 
-            playerCollider.center = controller.center;
+        if(overlayDisappearTime > 0)
+            overlayDisappearTime -= Time.deltaTime;
+        bloodOverlay.color = Color.Lerp(Color.clear, Color.white, overlayDisappearTime / 3f);
+        
+        if(fadeTime is >= 0 and <= 2)
+            fadeTime += fadeDirection * Time.deltaTime;
+        fadeOverlay.color = Color.Lerp(Color.black, Color.clear, fadeTime / 2f);
+
+        playerCollider.center = controller.center;
         playerCollider.height = controller.height;
+
+        if (GameDirector.instance.isLoadingNextLevel) return; 
+        
         if (!isPlayerLeaning)
         {
             float x = (Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0);
@@ -220,9 +239,16 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         if (isCrouching)
             activeSpeed = crouchSpeed;
         else if (isWalking)
-            activeSpeed = walkSpeed;
+        {
+            soundRadius = 100f;
+            activeSpeed = walkSpeed; 
+        }
         else if (isSprinting)
+        {
+            soundRadius = 200f;
             activeSpeed = sprintSpeed;
+        }
+            
         else
             activeSpeed = walkSpeed;
 
@@ -297,6 +323,34 @@ public class PlayerMovement : MonoBehaviour, IDamageable
                 }
             }
         }
+        
+        CreateSound();
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, soundRadius);
+    }
+
+    public void CreateSound()
+    {
+        if (isCrouching) return;
+        
+        Collider[] colliders = Physics.OverlapSphere(transform.position, soundRadius);
+        foreach(var collider in colliders)
+        {
+            if (collider.gameObject.CompareTag("Enemy"))
+            {
+                foreach (MonoBehaviour script in collider.gameObject.GetComponents<MonoBehaviour>())
+                {
+                    if (script is IHearing targetScript)
+                    {
+                        targetScript.HeardSound(transform.position);
+                    }
+                }
+            }
+        }
     }
 
     private IEnumerator enemySpotted()
@@ -342,6 +396,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     public void Damage(float damage)
     {
         health -= damage;
+        overlayDisappearTime = 3f;
         if(health <= 0)
             Death();
     }
