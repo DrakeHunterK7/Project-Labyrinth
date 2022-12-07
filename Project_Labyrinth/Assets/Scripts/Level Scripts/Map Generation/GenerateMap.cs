@@ -93,6 +93,9 @@ public class GenerateMap : MonoBehaviour
     [SerializeField]
     List<GameObject> hallwayPrefabs;
 
+    [SerializeField] private List<GameObject> enemiesToSpawn;
+    [SerializeField] private int[] enemyCount; 
+
 
     // Map Instance Variables
     Grid<CellType> grid;
@@ -684,7 +687,22 @@ public class GenerateMap : MonoBehaviour
 
     void EnemySpawnerMaker()
     {
-        Instantiate(EnemySpawner, Vector3.zero, Quaternion.identity);
+        //Instantiate(EnemySpawner, Vector3.zero, Quaternion.identity);
+        var waypointLists = GameObject.FindGameObjectsWithTag("Waypoint");
+        var index = 0;
+        var spawnIndex = 0;
+        foreach (GameObject enemy in enemiesToSpawn)
+        {
+            
+            for (int i = 0; i < enemyCount[index]; i++)
+            {
+                var newPosition = waypointLists[spawnIndex].transform.position;
+                Instantiate(enemy, newPosition, Quaternion.identity);
+                spawnIndex++;
+            }
+
+            index++;
+        }
 
     }
 

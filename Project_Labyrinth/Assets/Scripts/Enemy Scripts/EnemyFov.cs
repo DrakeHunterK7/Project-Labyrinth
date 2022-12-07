@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -49,12 +50,13 @@ public class EnemyFov : MonoBehaviour, IHearing
 
         if(isinFOV)
         {
+            heard = false;
             patrolStopTime = 7f;
             checkingTime = 7f;
             seeTime = 7f;
             sawPlayer = true;
-            agent.speed = 25;
-            //agent.SetDestination(player.position);
+            agent.speed = 20;
+            agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
             {
                 attack = true;
@@ -67,7 +69,7 @@ public class EnemyFov : MonoBehaviour, IHearing
         }
         else if (heard)
         {
-            agent.speed = 25;
+            agent.speed = 20;
             agent.SetDestination(soundposition);
             
             if (Vector3.Distance(soundposition, this.transform.position) < 2f)
@@ -98,6 +100,10 @@ public class EnemyFov : MonoBehaviour, IHearing
                     agent.speed = 10;
                 
                 }
+                else
+                {
+                    agent.SetDestination(player.position);
+                }
             }
             else
             {
@@ -122,6 +128,8 @@ public class EnemyFov : MonoBehaviour, IHearing
 
     public void HeardSound(Vector3 soundPosition)
     {
+        if (sawPlayer) return;
+        
         soundposition = soundPosition;
         heard = true;
     }
