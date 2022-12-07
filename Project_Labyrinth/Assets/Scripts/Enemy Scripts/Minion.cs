@@ -45,7 +45,7 @@ public class Minion : MonoBehaviour, IHearing
     void Update()
     {
         isinFOV = inFOV(transform, player, maxangle, maxradius);
-        animator.SetFloat("speed", agent.speed);
+        animator.SetFloat("speed", agent.velocity.magnitude);
 
 
 
@@ -60,7 +60,7 @@ public class Minion : MonoBehaviour, IHearing
             if (Vector3.Distance(player.position, this.transform.position) < 10f && !done)
             {
                 done = true;
-                animator.Play("Pounce");
+                animator.Play("pounce");
                GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().smelly = true;
                 MessageManager.instance.DisplayMessage("You have been marked.", Color.red);
                 MessageManager.instance.DisplayMessage("It's coming. Run.", Color.red);
@@ -202,6 +202,11 @@ public class Minion : MonoBehaviour, IHearing
         index = Random.Range(0, waypointlist.Count - 1);
     }
 
+    public IEnumerator destroyminion()
+    {
+        yield return new WaitForSeconds(1.25f);
+        Destroy(this.gameObject);
+    }
 }
 
 
