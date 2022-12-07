@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,7 +13,6 @@ public class EnemyFov : MonoBehaviour, IHearing
     private bool isinFOV = false;
     private NavMeshAgent agent;
     public Animator animator;
-    public List<GameObject> waypointlist = new List<GameObject>();
     private bool attack = false;
     private float seeTime = 7f;
     private bool sawPlayer = false;
@@ -20,17 +20,23 @@ public class EnemyFov : MonoBehaviour, IHearing
     private Vector3 soundposition = Vector3.zero;
     private float checkingTime = 7f;
     private float patrolStopTime = 7f;
-    public Vector3 patrolLocation = Vector3.zero;
+    public Vector3 patrolLocation;
+    public List<GameObject> waypointlist = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
     {
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
-        foreach(GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
+        foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
         {
             waypointlist.Add(wp);
         }
+
+
+        randomizeindex();
+
+        patrolLocation = waypointlist[index].transform.position;
         //randomizeindex();
     }
 
@@ -44,11 +50,12 @@ public class EnemyFov : MonoBehaviour, IHearing
 
         if(isinFOV)
         {
+            heard = false;
             patrolStopTime = 7f;
             checkingTime = 7f;
             seeTime = 7f;
             sawPlayer = true;
-            agent.speed = 25;
+            agent.speed = 20;
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
             {
@@ -62,7 +69,7 @@ public class EnemyFov : MonoBehaviour, IHearing
         }
         else if (heard)
         {
-            agent.speed = 25;
+            agent.speed = 20;
             agent.SetDestination(soundposition);
             
             if (Vector3.Distance(soundposition, this.transform.position) < 2f)
@@ -72,7 +79,8 @@ public class EnemyFov : MonoBehaviour, IHearing
 
                 if (checkingTime <= 0f)
                 {
-                    patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                    randomizeindex();
+                    patrolLocation = waypointlist[index].transform.position;
                     agent.speed = 10;
                     heard = false;
                     checkingTime = 7f;
@@ -92,17 +100,22 @@ public class EnemyFov : MonoBehaviour, IHearing
                     agent.speed = 10;
                 
                 }
+                else
+                {
+                    agent.SetDestination(player.position);
+                }
             }
             else
             {
-                if (Vector3.Distance(patrolLocation, this.transform.position) < 5f)
+                if (Vector3.Distance(patrolLocation, this.transform.position) < 10f)
                 {
                     patrolStopTime -= Time.deltaTime;
 
                     if (patrolStopTime <= 0f)
                     {
                         patrolStopTime = 7f;
-                        patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                        randomizeindex();
+                        patrolLocation = waypointlist[index].transform.position;
                     }
                 }
                 else
@@ -115,6 +128,8 @@ public class EnemyFov : MonoBehaviour, IHearing
 
     public void HeardSound(Vector3 soundPosition)
     {
+        if (sawPlayer) return;
+        
         soundposition = soundPosition;
         heard = true;
     }
@@ -186,29 +201,8 @@ public class EnemyFov : MonoBehaviour, IHearing
         return false;
     }
 
-    private void trackDistance()
-    {
-        if(Vector3.Magnitude(waypointlist[index].transform.position - transform.position) < 2f)
-        {
-            //agent.speed = 0;
-            StartCoroutine("randomizeindex1");
-        }
-
-        
-    }
-
     private void randomizeindex()
     {
-        index = Random.Range(0, waypointlist.Count - 1);
-    }
-
-    private IEnumerator randomizeindex1()
-    {
-        yield return new WaitForSeconds(5f);
-        if(agent.speed == 0)
-        {
-            agent.speed = 10;
-        }
         index = Random.Range(0, waypointlist.Count - 1);
     }
 

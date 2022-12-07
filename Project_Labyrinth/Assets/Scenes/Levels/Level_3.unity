@@ -1903,6 +1903,9 @@ MonoBehaviour:
   - {fileID: 268229727041783961, guid: 7098dbd6f7f9e7048b2e4809b9c0e743, type: 3}
   - {fileID: 2004253638746158890, guid: fbc4e610ddd61e842a8d84b17f827176, type: 3}
   - {fileID: 3734696838220572596, guid: 9a575f90e402d2c4d95ad35b6c76b9d4, type: 3}
+  enemiesToSpawn: []
+  enemyCount: 
+  EnemySpawner: {fileID: 0}
 --- !u!4 &2100423849
 Transform:
   m_ObjectHideFlags: 0

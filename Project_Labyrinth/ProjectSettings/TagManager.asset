@@ -17,6 +17,7 @@ TagManager:
   - Door
   - PlayerStartPoint
   - Enemy
+  - EnemySpawner
   layers:
   - Default
   - TransparentFX

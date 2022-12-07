@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
  
     private float walkSpeed = 10f;
-    private float sprintSpeed = 20f;
+    private float sprintSpeed = 22f;
     private float crouchSpeed = 5f;
     private bool canCrouch = true;
     private float activeSpeed;

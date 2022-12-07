@@ -3,18 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Minion : MonoBehaviour
+public class Minion : MonoBehaviour, IHearing
 {
     public Transform player;
-    private GameObject playermodel;
     private int index = 0;
     public float maxangle;
     private float maxradius = 75f;
     private bool isinFOV = false;
     private NavMeshAgent agent;
     public Animator animator;
-    public List<GameObject> waypointlist = new List<GameObject>();
+    private bool attack = false;
+    private float seeTime = 7f;
+    private bool sawPlayer = false;
+    private bool heard = false;
+    private Vector3 soundposition = Vector3.zero;
+    private float checkingTime = 7f;
+    private float patrolStopTime = 7f;
+    public Vector3 patrolLocation;
     private bool done = false;
+    public List<GameObject> waypointlist = new List<GameObject>();
 
 
     // Start is called before the first frame update
@@ -22,47 +29,105 @@ public class Minion : MonoBehaviour
     {
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
-        playermodel = GameObject.FindWithTag("Player");
+       
         foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
         {
             waypointlist.Add(wp);
         }
+
+
         randomizeindex();
-        agent.speed = 25;
+
+        patrolLocation = waypointlist[index].transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        animator.SetFloat("speed", agent.speed);
         isinFOV = inFOV(transform, player, maxangle, maxradius);
+        animator.SetFloat("speed", agent.velocity.magnitude);
 
-        //if (isinFOV)
+
+
         if (isinFOV)
         {
-           
+            patrolStopTime = 7f;
+            checkingTime = 7f;
+            seeTime = 7f;
+            sawPlayer = true;
+            agent.speed = 25;
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f && !done)
             {
                 done = true;
-                animator.Play("Pounce");
-                playermodel.GetComponent<PlayerMovement>().smelly = true;
+                animator.Play("pounce");
+               GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().smelly = true;
                 MessageManager.instance.DisplayMessage("You have been marked.", Color.red);
                 MessageManager.instance.DisplayMessage("It's coming. Run.", Color.red);
                 StartCoroutine("destroyminion");
             }
+
+        }
+        else if (heard)
+        {
+            agent.speed = 25;
+            agent.SetDestination(soundposition);
+
+            if (Vector3.Distance(soundposition, this.transform.position) < 2f)
+            {
+                Debug.Log("At soundpos");
+                checkingTime -= Time.deltaTime;
+
+                if (checkingTime <= 0f)
+                {
+                    randomizeindex();
+                    patrolLocation = waypointlist[index].transform.position;
+                    agent.speed = 10;
+                    heard = false;
+                    checkingTime = 7f;
+                }
+            }
         }
         else
         {
-            //agent.SetDestination(waypointlist[index].transform.position);
-            agent.SetDestination(player.position);
+            attack = false;
+            if (sawPlayer)
+            {
+                seeTime -= Time.deltaTime;
+
+                if (seeTime <= 0)
+                {
+                    sawPlayer = false;
+                    agent.speed = 10;
+
+                }
+            }
+            else
+            {
+                if (Vector3.Distance(patrolLocation, this.transform.position) < 10f)
+                {
+                    patrolStopTime -= Time.deltaTime;                   
+
+                    if (patrolStopTime <= 0f)
+                    {
+                        patrolStopTime = 7f;
+                        randomizeindex();
+                        patrolLocation = waypointlist[index].transform.position;
+                    }
+                }
+                else
+                {
+                    agent.SetDestination(patrolLocation);
+                    Debug.Log("Patrolling");
+                }
+            }
         }
-        if (index > waypointlist.Count - 1)
-        {
-            index = 0;
-        }
-        trackDistance();
-        Debug.Log(waypointlist[index].transform.position);
+    }
+
+    public void HeardSound(Vector3 soundPosition)
+    {
+        soundposition = soundPosition;
+        heard = true;
     }
 
     private void OnDrawGizmos()
@@ -79,12 +144,15 @@ public class Minion : MonoBehaviour
         Gizmos.DrawRay(transform.position, fovLine1);
         Gizmos.DrawRay(transform.position, fovLine2);
 
-        if (!isinFOV)
+        if (!sawPlayer)
             Gizmos.color = Color.red;
         else
             Gizmos.color = Color.green;
 
         Gizmos.DrawRay(transform.position, (player.position - transform.position).normalized * maxradius);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(transform.position, (patrolLocation - transform.position));
 
         Gizmos.color = Color.black;
         Gizmos.DrawRay(transform.position, transform.forward * maxradius);
@@ -129,16 +197,6 @@ public class Minion : MonoBehaviour
         return false;
     }
 
-    private void trackDistance()
-    {
-        if (Vector3.Magnitude(waypointlist[index].transform.position - transform.position) < 2f)
-        {
-            randomizeindex();
-        }
-
-
-    }
-
     private void randomizeindex()
     {
         index = Random.Range(0, waypointlist.Count - 1);
@@ -150,5 +208,6 @@ public class Minion : MonoBehaviour
         Destroy(this.gameObject);
     }
 }
+
 
 

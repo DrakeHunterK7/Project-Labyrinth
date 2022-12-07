@@ -1634,6 +1634,11 @@ MonoBehaviour:
   - {fileID: 268229727041783961, guid: 7098dbd6f7f9e7048b2e4809b9c0e743, type: 3}
   - {fileID: 2004253638746158890, guid: fbc4e610ddd61e842a8d84b17f827176, type: 3}
   - {fileID: 3734696838220572596, guid: 9a575f90e402d2c4d95ad35b6c76b9d4, type: 3}
+  enemiesToSpawn:
+  - {fileID: 5841229564029263306, guid: f033d99ec1f665b419ee3c260dd11d34, type: 3}
+  - {fileID: 5841229564029263306, guid: 6674d2ff589764e4880bf790f3ba0bd0, type: 3}
+  enemyCount: 0700000001000000
+  EnemySpawner: {fileID: 0}
 --- !u!4 &1737260186
 Transform:
   m_ObjectHideFlags: 0
