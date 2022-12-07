@@ -128,7 +128,6 @@ public class GenerateMap : MonoBehaviour
         Pathfinding();
         OtherWork();
         SpawnItems();
-
     }
 
 
