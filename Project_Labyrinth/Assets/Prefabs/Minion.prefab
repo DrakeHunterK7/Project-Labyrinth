@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6511052753761535856}
   - component: {fileID: 3163886911315717114}
   - component: {fileID: -5592364416683700029}
+  - component: {fileID: 978354903652382913}
   m_Layer: 0
   m_Name: Minion
   m_TagString: Enemy
@@ -72,6 +73,20 @@ MonoBehaviour:
   maxangle: 45
   animator: {fileID: 344138874015619875}
   patrolLocation: {x: 0, y: 0, z: 0}
+  waypointlist: []
+--- !u!65 &978354903652382913
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5841229564029263306}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.707272, y: 5.765973, z: 13.815173}
+  m_Center: {x: 0.092128515, y: 3.1689544, z: -6.4075823}
 --- !u!1001 &344138874022948419
 PrefabInstance:
   m_ObjectHideFlags: 0

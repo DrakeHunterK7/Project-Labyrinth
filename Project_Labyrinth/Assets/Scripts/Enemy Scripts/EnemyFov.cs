@@ -19,13 +19,23 @@ public class EnemyFov : MonoBehaviour, IHearing
     private Vector3 soundposition = Vector3.zero;
     private float checkingTime = 7f;
     private float patrolStopTime = 7f;
-    public Vector3 patrolLocation = Vector3.zero;
+    public Vector3 patrolLocation;
+    public List<GameObject> waypointlist = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
     {
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
+        foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
+        {
+            waypointlist.Add(wp);
+        }
+
+
+        randomizeindex();
+
+        patrolLocation = waypointlist[index].transform.position;
         //randomizeindex();
     }
 
@@ -44,7 +54,7 @@ public class EnemyFov : MonoBehaviour, IHearing
             seeTime = 7f;
             sawPlayer = true;
             agent.speed = 25;
-            agent.SetDestination(player.position);
+            //agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 10f)
             {
                 attack = true;
@@ -67,7 +77,8 @@ public class EnemyFov : MonoBehaviour, IHearing
 
                 if (checkingTime <= 0f)
                 {
-                    patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                    randomizeindex();
+                    patrolLocation = waypointlist[index].transform.position;
                     agent.speed = 10;
                     heard = false;
                     checkingTime = 7f;
@@ -90,14 +101,15 @@ public class EnemyFov : MonoBehaviour, IHearing
             }
             else
             {
-                if (Vector3.Distance(patrolLocation, this.transform.position) < 5f)
+                if (Vector3.Distance(patrolLocation, this.transform.position) < 10f)
                 {
                     patrolStopTime -= Time.deltaTime;
 
                     if (patrolStopTime <= 0f)
                     {
                         patrolStopTime = 7f;
-                        patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                        randomizeindex();
+                        patrolLocation = waypointlist[index].transform.position;
                     }
                 }
                 else
@@ -181,6 +193,9 @@ public class EnemyFov : MonoBehaviour, IHearing
         return false;
     }
 
-   
+    private void randomizeindex()
+    {
+        index = Random.Range(0, waypointlist.Count - 1);
+    }
 
 }

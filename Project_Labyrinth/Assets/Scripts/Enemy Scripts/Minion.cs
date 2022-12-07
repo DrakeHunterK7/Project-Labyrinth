@@ -21,16 +21,24 @@ public class Minion : MonoBehaviour, IHearing
     private float patrolStopTime = 7f;
     public Vector3 patrolLocation;
     private bool done = false;
+    public List<GameObject> waypointlist = new List<GameObject>();
+
 
     // Start is called before the first frame update
     void Start()
     {
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
-        patrolLocation = transform.position;
+       
+        foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
+        {
+            waypointlist.Add(wp);
+        }
 
 
-        //randomizeindex();
+        randomizeindex();
+
+        patrolLocation = waypointlist[index].transform.position;
     }
 
     // Update is called once per frame
@@ -72,7 +80,8 @@ public class Minion : MonoBehaviour, IHearing
 
                 if (checkingTime <= 0f)
                 {
-                    patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                    randomizeindex();
+                    patrolLocation = waypointlist[index].transform.position;
                     agent.speed = 10;
                     heard = false;
                     checkingTime = 7f;
@@ -95,15 +104,15 @@ public class Minion : MonoBehaviour, IHearing
             }
             else
             {
-                if (Vector3.Distance(patrolLocation, this.transform.position) < 200f)
+                if (Vector3.Distance(patrolLocation, this.transform.position) < 10f)
                 {
-                    patrolStopTime -= Time.deltaTime;
-                    patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                    patrolStopTime -= Time.deltaTime;                   
 
                     if (patrolStopTime <= 0f)
                     {
                         patrolStopTime = 7f;
-                        patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                        randomizeindex();
+                        patrolLocation = waypointlist[index].transform.position;
                     }
                 }
                 else
@@ -188,7 +197,10 @@ public class Minion : MonoBehaviour, IHearing
         return false;
     }
 
-    
+    private void randomizeindex()
+    {
+        index = Random.Range(0, waypointlist.Count - 1);
+    }
 
 }
 
