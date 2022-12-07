@@ -89,6 +89,8 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     [SerializeField] private AudioSource heartBeatSound;
     [SerializeField] private AudioSource breatheSound;
     [SerializeField] private AudioSource deathSound;
+    [SerializeField] private AudioSource pickupSound;
+
 
     private Vector3 velocity = Vector3.zero;
 
@@ -238,7 +240,10 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         UpdateCollarLight();
 
         if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
             PickupItem();
+            
+        }
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
             UseItem();
@@ -562,6 +567,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             if (inventoryManager.Add(hoveredPickup.Item))
             {
                 Destroy(hoveredPickup.gameObject);
+                pickupSound.Play();
             }
             else
             {
