@@ -380,8 +380,8 @@ public class GenerateMap : MonoBehaviour
             surface.BuildNavMesh();
             break;
         }
-
-        player.transform.position = GameObject.FindWithTag("PlayerStartPoint").transform.position + Vector3.up * 5f;
+        if(player != null)
+            player.transform.position = GameObject.FindWithTag("PlayerStartPoint").transform.position + Vector3.up * 5f;
     }
 
     // Adds room to list of rooms and then spawns room in world space
