@@ -105,6 +105,8 @@ public class GenerateMap : MonoBehaviour
 
     HashSet<Edge> mapEdges;
 
+    public GameObject EnemySpawner;
+
 
     private void Awake()
     {
@@ -128,6 +130,7 @@ public class GenerateMap : MonoBehaviour
         Pathfinding();
         OtherWork();
         SpawnItems();
+        EnemySpawnerMaker();
     }
 
 
@@ -677,6 +680,12 @@ public class GenerateMap : MonoBehaviour
         {
             SceneManager.LoadScene(nextScene);
         }
+    }
+
+    void EnemySpawnerMaker()
+    {
+        Instantiate(EnemySpawner, Vector3.zero, Quaternion.identity);
+
     }
 
 }
