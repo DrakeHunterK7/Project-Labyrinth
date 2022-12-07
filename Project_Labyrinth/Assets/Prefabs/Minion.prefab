@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -5592364416683700029}
   m_Layer: 0
   m_Name: Minion
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 5841229564029263306}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
+  m_LocalScale: {x: 0.025, y: 0.025, z: 0.025}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 344138874023081129}
@@ -43,7 +43,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 5841229564029263306}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 10
+  m_Radius: 0.5
   m_Speed: 10
   m_Acceleration: 8
   avoidancePriority: 50
@@ -52,7 +52,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 5
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -71,7 +71,7 @@ MonoBehaviour:
   player: {fileID: 0}
   maxangle: 45
   animator: {fileID: 344138874015619875}
-  waypointlist: []
+  patrolLocation: {x: 0, y: 0, z: 0}
 --- !u!1001 &344138874022948419
 PrefabInstance:
   m_ObjectHideFlags: 0

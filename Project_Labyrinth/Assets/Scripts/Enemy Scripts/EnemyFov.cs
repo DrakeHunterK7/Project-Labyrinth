@@ -12,7 +12,6 @@ public class EnemyFov : MonoBehaviour, IHearing
     private bool isinFOV = false;
     private NavMeshAgent agent;
     public Animator animator;
-    public List<GameObject> waypointlist = new List<GameObject>();
     private bool attack = false;
     private float seeTime = 7f;
     private bool sawPlayer = false;
@@ -27,10 +26,6 @@ public class EnemyFov : MonoBehaviour, IHearing
     {
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
-        foreach(GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
-        {
-            waypointlist.Add(wp);
-        }
         //randomizeindex();
     }
 
@@ -186,30 +181,6 @@ public class EnemyFov : MonoBehaviour, IHearing
         return false;
     }
 
-    private void trackDistance()
-    {
-        if(Vector3.Magnitude(waypointlist[index].transform.position - transform.position) < 2f)
-        {
-            //agent.speed = 0;
-            StartCoroutine("randomizeindex1");
-        }
-
-        
-    }
-
-    private void randomizeindex()
-    {
-        index = Random.Range(0, waypointlist.Count - 1);
-    }
-
-    private IEnumerator randomizeindex1()
-    {
-        yield return new WaitForSeconds(5f);
-        if(agent.speed == 0)
-        {
-            agent.speed = 10;
-        }
-        index = Random.Range(0, waypointlist.Count - 1);
-    }
+   
 
 }

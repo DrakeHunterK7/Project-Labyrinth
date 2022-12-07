@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Boss : MonoBehaviour, IHearing
+public class Boss : MonoBehaviour
 {
     public float bossdamage;
     private GameObject player;
@@ -30,41 +30,7 @@ public class Boss : MonoBehaviour, IHearing
     {
         if (player.GetComponent<PlayerMovement>().smelly)
         {
-            patrolStopTime = 7f;
-            checkingTime = 7f;
             agent.SetDestination(player.transform.position);
-        }
-        else if (heard)
-        {
-            agent.SetDestination(soundposition);
-            Debug.Log("Sound Heard");
-            if (Vector3.Distance(soundposition, this.transform.position) < 2f)
-            {
-                Debug.Log("At soundpos");
-                checkingTime -= Time.deltaTime;
-
-                if (checkingTime <= 0f)
-                {
-                    heard = false;
-                    checkingTime = 7f;
-                }
-            }
-        }
-        else
-        {
-            if (agent.remainingDistance < 5f)
-            {
-                patrolStopTime -= Time.deltaTime;
-
-                if (patrolStopTime <= 0f)
-                {
-                    patrolStopTime = 7f;
-                    patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
-                }
-                
-            }
-
-            agent.SetDestination(patrolLocation);
         }
         
         
@@ -84,11 +50,6 @@ public class Boss : MonoBehaviour, IHearing
 
     }
 
-    public void HeardSound(Vector3 soundPosition)
-    {
-        heard = true;
-        soundposition = soundPosition;
-    }
 
     public IEnumerator damageplayer()
     {
