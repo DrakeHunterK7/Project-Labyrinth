@@ -13,6 +13,12 @@ public class Pause_Menu : MonoBehaviour
 
     public static bool isPaused = false;
 
+    void Start()
+    {
+        if(HUDCanvas == null)
+            HUDCanvas = GameObject.Find("GameCanvas");
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -50,6 +56,8 @@ public class Pause_Menu : MonoBehaviour
     {
         isPaused = false;
         Time.timeScale = 1.0f;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
         SceneManager.LoadScene("Main_Menu");
     }
 
