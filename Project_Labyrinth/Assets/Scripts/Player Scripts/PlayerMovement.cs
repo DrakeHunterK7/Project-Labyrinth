@@ -53,6 +53,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private bool isWalking;
     private bool isSprinting;
     private bool isCrouching;
+    private bool isRunning;
 
     [HideInInspector]
     public bool smelly = false;
@@ -260,6 +261,15 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             isWalking = false;
         }
 
+        if (Input.GetAxis("Vertical") != 0 && isSprinting)
+        {
+            isRunning = true;
+        }
+        else
+        {
+            isRunning = false;
+        }
+
         if (isWalking && !isCrouching)
         {
             if (!walkSound.isPlaying)
@@ -272,7 +282,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             walkSound.Stop();
         }
 
-        if (isSprinting)
+        if (isRunning)
         {
             if (!sprintSound.isPlaying)
             {
