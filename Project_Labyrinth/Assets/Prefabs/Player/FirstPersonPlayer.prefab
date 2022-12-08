@@ -433,27 +433,31 @@ GameObject:
   - component: {fileID: 1520532542}
   m_Layer: 0
   m_Name: Chase Music
+  - component: {fileID: 1721779846}
+  - component: {fileID: 1721779847}
+  m_Layer: 0
+  m_Name: Pickup Sound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1520532543
+--- !u!4 &1721779846
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1520532541}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_GameObject: {fileID: 1721779845}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 526702106}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!82 &1520532542
+--- !u!82 &1721779847
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -827,6 +831,7 @@ MonoBehaviour:
   deathSound: {fileID: 8412399258987818189}
   levelMusic: {fileID: 0}
   chaseMusic: {fileID: 1520532542}
+  pickupSound: {fileID: 1721779847}
   interactable: {fileID: 0}
   bloodOverlay: {fileID: 2474597584218749319}
   fadeOverlay: {fileID: 4481962448355068764}

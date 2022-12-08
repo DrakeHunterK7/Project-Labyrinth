@@ -14,6 +14,8 @@ public class GameDirector : MonoBehaviour
     private PlayerMovement playerScript;
     public bool isLoadingNextLevel = false;
     public bool isPlayerDead = false;
+    public bool isDoctorDead = false;
+    
     
     private void Awake()
     {
@@ -23,16 +25,12 @@ public class GameDirector : MonoBehaviour
         }
         DontDestroyOnLoad(this.gameObject);
     }
-    void Start()
-    {
-        
-    }
-    
+
     public void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
- 
+    
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         isLoadingNextLevel = false;
@@ -42,7 +40,7 @@ public class GameDirector : MonoBehaviour
         playerScript.fadeTime = 0;
         MessageManager.instance.AddObjective("THE ESCAPE: Find a way to escape the lab", Color.yellow);
     }
- 
+    
     void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -64,9 +62,21 @@ public class GameDirector : MonoBehaviour
 
     void LoadLevel()
     {
-        SceneManager.LoadScene(levelNames[gameLevel]);
+        if (gameLevel > 2)
+        {
+            if (!isDoctorDead)
+            {
+                SceneManager.LoadScene("Neutral Ending");
+            }
+            else
+            {
+                SceneManager.LoadScene("Good Ending");
+            }
+        }
+        else
+        {
+            SceneManager.LoadScene(levelNames[gameLevel]);
+        }
     }
-
- 
 }
 

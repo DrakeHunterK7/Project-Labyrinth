@@ -36,7 +36,10 @@ public class Boss : MonoBehaviour
         
         if (Vector3.Distance(player.transform.position, this.transform.position) < 10f)
         {
-            Destroy(player);
+            if (player.GetComponent<MonoBehaviour>() is IDamageable script)
+            {
+                script.Damage(100f);
+            }
         }
         
     }

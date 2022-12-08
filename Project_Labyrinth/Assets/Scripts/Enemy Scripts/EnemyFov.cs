@@ -1,7 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -40,6 +37,7 @@ public class EnemyFov : MonoBehaviour, IHearing
     {
         instance = this;
 
+        animator = GetComponent<Animator>();
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
         foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
@@ -57,6 +55,8 @@ public class EnemyFov : MonoBehaviour, IHearing
     // Update is called once per frame
     void Update()
     {
+        if (GameDirector.instance.isPlayerDead) return;
+        
         isinFOV = inFOV(transform, player, maxangle, maxradius);
         animator.SetFloat("speed", agent.velocity.magnitude);
         animator.SetBool("attack", attack);

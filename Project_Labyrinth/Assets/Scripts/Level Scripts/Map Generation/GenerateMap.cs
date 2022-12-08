@@ -23,7 +23,6 @@ SOFTWARE.*/
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
-using UnityEditor.AI;
 using UnityEngine.SceneManagement;
 
 public class GenerateMap : MonoBehaviour
@@ -91,6 +90,12 @@ public class GenerateMap : MonoBehaviour
     List<GameObject> roomPrefabs;
 
     [SerializeField]
+    bool includeBossRoom;
+
+    [SerializeField]
+    GameObject bossRoomPrefab;
+
+    [SerializeField]
     List<GameObject> hallwayPrefabs;
 
     [SerializeField] private List<GameObject> enemiesToSpawn;
@@ -110,6 +115,8 @@ public class GenerateMap : MonoBehaviour
 
     public GameObject EnemySpawner;
 
+    bool bossRoomIncluded;
+
 
     private void Awake()
     {
@@ -118,6 +125,7 @@ public class GenerateMap : MonoBehaviour
 
     void Start()
     {
+        
         player = GameObject.FindWithTag("Player");
         CreateMap();
     }
@@ -186,6 +194,10 @@ public class GenerateMap : MonoBehaviour
                 else if(roomToSpawn == roomPrefabs[1]) // ensures the ending room is added
                 {
                     endingRoomAdded = true;
+                }
+                else if(roomToSpawn == bossRoomPrefab)
+                {
+                    bossRoomIncluded = true;
                 }
 
                 addRoom(tempRoom);
@@ -380,8 +392,8 @@ public class GenerateMap : MonoBehaviour
             surface.BuildNavMesh();
             break;
         }
-
-        player.transform.position = GameObject.FindWithTag("PlayerStartPoint").transform.position + Vector3.up * 5f;
+        if(player != null)
+            player.transform.position = GameObject.FindWithTag("PlayerStartPoint").transform.position + Vector3.up * 5f;
     }
 
     // Adds room to list of rooms and then spawns room in world space
@@ -428,6 +440,10 @@ public class GenerateMap : MonoBehaviour
         else if(!endingRoomAdded)
         {
             return roomPrefabs[1];
+        }
+        else if(includeBossRoom && !bossRoomIncluded)
+        {
+            return bossRoomPrefab;
         }
         else
         {
@@ -644,11 +660,10 @@ public class GenerateMap : MonoBehaviour
     // Function that resets all variables for each map generation
     void resetMap()
     {
-        // Removes the previously baked navmesh
-        NavMeshBuilder.ClearAllNavMeshes();
-
         startingRoomAdded = false;
         endingRoomAdded = false;
+
+        bossRoomIncluded = false;
 
         gridSize = gridDimensions;
         rooms = new List<Room>();

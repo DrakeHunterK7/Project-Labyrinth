@@ -1,18 +1,8 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Timers;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
-using UnityEngine.XR;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
@@ -91,6 +81,8 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     [SerializeField] private AudioSource deathSound;
     [SerializeField] public AudioSource levelMusic;
     [SerializeField] public AudioSource chaseMusic;
+    [SerializeField] private AudioSource pickupSound;
+
 
     private Vector3 velocity = Vector3.zero;
 
@@ -241,7 +233,10 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         UpdateCollarLight();
 
         if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
             PickupItem();
+            
+        }
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
             UseItem();
@@ -579,6 +574,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             if (inventoryManager.Add(hoveredPickup.Item))
             {
                 Destroy(hoveredPickup.gameObject);
+                pickupSound.Play();
             }
             else
             {
