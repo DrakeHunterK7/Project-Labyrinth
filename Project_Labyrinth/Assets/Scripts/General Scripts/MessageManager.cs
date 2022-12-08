@@ -47,13 +47,15 @@ public class MessageManager : MonoBehaviour
     
     public void AddObjective(String message, Color textColor)
     {
-        GameObject newMessage = Instantiate(objectivePrefab, objectiveBox.transform);
-        var newMessageText = newMessage.GetComponent<Text>();
-        newMessageText.text = message;
-        newMessageText.color = textColor;
+        if (!ObjectiveAlreadyExists(message))
+        {
+            GameObject newMessage = Instantiate(objectivePrefab, objectiveBox.transform);
+            var newMessageText = newMessage.GetComponent<Text>();
+            newMessageText.text = message;
+            newMessageText.color = textColor;
         
-        messages.Add(newMessage);
-        
+            messages.Add(newMessage);
+        }
     }
     
     public void UpdateObjective(String newMessage, String objectiveTitle)
@@ -70,9 +72,19 @@ public class MessageManager : MonoBehaviour
                 messageTextComponent.text = objectiveTitle + ": " + newMessage;
             }
         }
-        
+    }
 
-        
+    private bool ObjectiveAlreadyExists(String objectiveFull)
+    {
+        foreach (Text message in objectiveBox.GetComponentsInChildren<Text>())
+        {
+          if (message.text.Contains(objectiveFull))
+          {
+              return true;
+          }
+        }
+
+        return false;
     }
 
 }
