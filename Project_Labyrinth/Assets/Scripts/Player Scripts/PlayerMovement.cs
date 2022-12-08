@@ -140,6 +140,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         itemBox_text = GameObject.FindWithTag("ItemUIText").GetComponent<Text>();
 
         defaultYCameraPosition = mainCam.transform.localPosition.y;
+        levelMusic = GameObject.FindWithTag("LevelMusic").GetComponent<AudioSource>();
     }
     
     // Update is called once per frame
