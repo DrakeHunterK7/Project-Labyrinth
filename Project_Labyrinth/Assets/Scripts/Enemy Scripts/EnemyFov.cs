@@ -14,7 +14,7 @@ public class EnemyFov : MonoBehaviour, IHearing
     private NavMeshAgent agent;
     public Animator animator;
     private bool attack = false;
-    private float seeTime = 7f;
+    private float seeTime = 3f;
     private bool sawPlayer = false;
     private bool heard = false;
     private Vector3 soundposition = Vector3.zero;
@@ -67,7 +67,7 @@ public class EnemyFov : MonoBehaviour, IHearing
             heard = false;
             patrolStopTime = 7f;
             checkingTime = 7f;
-            seeTime = 7f;
+            seeTime = 3f;
             sawPlayer = true;
             agent.speed = 20;
             agent.SetDestination(player.position);
@@ -93,7 +93,10 @@ public class EnemyFov : MonoBehaviour, IHearing
             }
             else
             {
-                attack = false;
+                if (Vector3.Distance(player.position, this.transform.position) > maxradius + 10f)
+                {
+                    isinFOV = false;
+                }
             }
 
         }

@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class GameDirector : MonoBehaviour
 {
     public static GameDirector instance;
-    private int gameLevel = 0;
+    public int gameLevel = 0;
     [SerializeField] private List<String> levelNames;
     [SerializeField] private GameObject player;
     private PlayerMovement playerScript;

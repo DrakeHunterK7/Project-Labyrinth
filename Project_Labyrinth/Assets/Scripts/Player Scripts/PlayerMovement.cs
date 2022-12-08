@@ -82,6 +82,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     [SerializeField] public AudioSource levelMusic;
     [SerializeField] public AudioSource chaseMusic;
     [SerializeField] private AudioSource pickupSound;
+    [SerializeField] private AudioSource damageSound;
 
 
     private Vector3 velocity = Vector3.zero;
@@ -142,6 +143,11 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            GameDirector.instance.NextLevel();
+        }
+        
         if (exitPointer != null)
         {
             var exitPosition = mainCam.WorldToScreenPoint(exitPointer.transform.position);
@@ -296,12 +302,12 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             activeSpeed = crouchSpeed;
         else if (isWalking)
         {
-            soundRadius = 100f;
+            soundRadius = 50f;
             activeSpeed = walkSpeed; 
         }
         else if (isSprinting)
         {
-            soundRadius = 200f;
+            soundRadius = 150f;
             activeSpeed = sprintSpeed;
         }
             
@@ -467,6 +473,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     {
         if (GameDirector.instance.isLoadingNextLevel || GameDirector.instance.isPlayerDead) return;
         
+        damageSound.Play();
         health -= damage;
         overlayDisappearTime = 3f;
         if(health <= 0)
@@ -683,8 +690,17 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(5f);
         deathSubtitleShow = true;
         yield return new WaitForSeconds(5f);
-        quitgameBtn.gameObject.SetActive(true);
-        mainmenuBtn.gameObject.SetActive(true);
+
+        if (GameDirector.instance.gameLevel == 2)
+        {
+            SceneManager.LoadScene("Bad Ending");
+        }
+        else
+        {
+            quitgameBtn.gameObject.SetActive(true);
+            mainmenuBtn.gameObject.SetActive(true);
+        }
+        
     }
 
     public void LoadMainMenu()

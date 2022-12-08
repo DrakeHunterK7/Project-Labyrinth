@@ -77,6 +77,8 @@ public class GenerateMap : MonoBehaviour
 
     private GameObject player;
 
+    [SerializeField] private GameObject killSwitchPrefab;
+
 
     // other
     [SerializeField]
@@ -116,6 +118,7 @@ public class GenerateMap : MonoBehaviour
     public GameObject EnemySpawner;
 
     bool bossRoomIncluded;
+    public bool spawnKillSwitch;
 
 
     private void Awake()
@@ -374,6 +377,12 @@ public class GenerateMap : MonoBehaviour
             {
                 room.GetComponent<Room_Controller>().SpawnItems();
             }
+        }
+
+        if (spawnKillSwitch)
+        {
+            var position = GameObject.FindWithTag("Waypoint").transform.position + 5 * Vector3.up;
+            Instantiate(killSwitchPrefab, position, Quaternion.identity);
         }
     }
 
