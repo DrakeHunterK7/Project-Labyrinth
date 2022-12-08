@@ -18,6 +18,7 @@ TagManager:
   - PlayerStartPoint
   - Enemy
   - EnemySpawner
+  - LevelMusic
   layers:
   - Default
   - TransparentFX
