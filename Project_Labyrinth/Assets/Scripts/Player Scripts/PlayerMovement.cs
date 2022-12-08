@@ -96,6 +96,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private GameObject itemBox;
     private RectTransform itemBox_transform;
     private Text itemBox_text;
+    [SerializeField] private RectTransform exitIcon;
     [SerializeField] private UnityEngine.UI.Image bloodOverlay;
     [SerializeField] private UnityEngine.UI.Image fadeOverlay;
     [SerializeField] private UnityEngine.UI.Image deathOverlay;
@@ -114,6 +115,8 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     private bool deathTitleShow = false;
     private bool deathSubtitleShow = false;
+
+    private GameObject exitPointer;
     
 
     void Awake()
@@ -133,11 +136,32 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
         defaultYCameraPosition = mainCam.transform.localPosition.y;
         levelMusic = GameObject.FindWithTag("LevelMusic").GetComponent<AudioSource>();
+        
     }
     
     // Update is called once per frame
     void Update()
     {
+        if (exitPointer != null)
+        {
+            var exitPosition = mainCam.WorldToScreenPoint(exitPointer.transform.position);
+            exitIcon.position = exitPosition;
+        }
+        else
+        {
+            exitPointer = GameObject.FindWithTag("ExitPoint");
+        }
+        
+        
+        if (Input.GetKey(KeyCode.T))
+        {
+            exitIcon.gameObject.SetActive(true);
+        }
+        else
+        {
+            exitIcon.gameObject.SetActive(false);
+        }
+        
         if (Input.GetKeyDown(KeyCode.V))
         {
             smelly = false;

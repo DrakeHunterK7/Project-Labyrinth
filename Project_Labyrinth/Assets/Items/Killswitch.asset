@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Killswitch
   m_EditorClassIdentifier: 
   id: 0
-  itemName: Doctor Killswitch
+  itemName: Killswitch
   value: 1
   icon: {fileID: 0}
   prefab: {fileID: 1216505430168376, guid: 3ef0b258524a5fc459d242a04375cb1e, type: 3}

@@ -19,6 +19,7 @@ TagManager:
   - Enemy
   - EnemySpawner
   - LevelMusic
+  - ExitPoint
   layers:
   - Default
   - TransparentFX

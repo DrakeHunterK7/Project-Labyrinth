@@ -830,6 +830,7 @@ MonoBehaviour:
   chaseMusic: {fileID: 1520532542}
   pickupSound: {fileID: 996856501115392991}
   interactable: {fileID: 0}
+  exitIcon: {fileID: 4158027487487904694}
   bloodOverlay: {fileID: 2474597584218749319}
   fadeOverlay: {fileID: 4481962448355068764}
   deathOverlay: {fileID: 444704765642779254}
@@ -1665,6 +1666,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &4158027487487904694 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2692828833026758833, guid: 349c35b298e33d84bbc1b3a3d5cbb6e7, type: 3}
+  m_PrefabInstance: {fileID: 2083652008589103879}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4481962448355068764 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2511248754483632219, guid: 349c35b298e33d84bbc1b3a3d5cbb6e7, type: 3}
