@@ -91,6 +91,12 @@ public class GenerateMap : MonoBehaviour
     List<GameObject> roomPrefabs;
 
     [SerializeField]
+    bool includeBossRoom;
+
+    [SerializeField]
+    GameObject bossRoomPrefab;
+
+    [SerializeField]
     List<GameObject> hallwayPrefabs;
 
     [SerializeField] private List<GameObject> enemiesToSpawn;
@@ -110,6 +116,8 @@ public class GenerateMap : MonoBehaviour
 
     public GameObject EnemySpawner;
 
+    bool bossRoomIncluded;
+
 
     private void Awake()
     {
@@ -118,6 +126,7 @@ public class GenerateMap : MonoBehaviour
 
     void Start()
     {
+        
         player = GameObject.FindWithTag("Player");
         CreateMap();
     }
@@ -186,6 +195,10 @@ public class GenerateMap : MonoBehaviour
                 else if(roomToSpawn == roomPrefabs[1]) // ensures the ending room is added
                 {
                     endingRoomAdded = true;
+                }
+                else if(roomToSpawn == bossRoomPrefab)
+                {
+                    bossRoomIncluded = true;
                 }
 
                 addRoom(tempRoom);
@@ -429,6 +442,10 @@ public class GenerateMap : MonoBehaviour
         {
             return roomPrefabs[1];
         }
+        else if(includeBossRoom && !bossRoomIncluded)
+        {
+            return bossRoomPrefab;
+        }
         else
         {
             return roomPrefabs[roomIndex];
@@ -649,6 +666,8 @@ public class GenerateMap : MonoBehaviour
 
         startingRoomAdded = false;
         endingRoomAdded = false;
+
+        bossRoomIncluded = false;
 
         gridSize = gridDimensions;
         rooms = new List<Room>();
