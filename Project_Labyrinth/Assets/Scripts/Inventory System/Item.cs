@@ -16,13 +16,6 @@ public class Item : ScriptableObject
     public float effectDuration;
     public ItemController script;
     public AudioClip useSound;
-
-    private void OnEnable()
-    {
-        
-    }
-
-    
 }
 
 public enum ItemType
