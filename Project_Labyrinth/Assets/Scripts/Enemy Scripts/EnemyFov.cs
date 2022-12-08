@@ -7,6 +7,8 @@ using UnityEngine.AI;
 
 public class EnemyFov : MonoBehaviour, IHearing
 {
+    public static EnemyFov instance;
+
     public Transform player;
     private int index = 0;
     public float maxangle;
@@ -23,10 +25,21 @@ public class EnemyFov : MonoBehaviour, IHearing
     private float patrolStopTime = 7f;
     public Vector3 patrolLocation;
     public List<GameObject> waypointlist = new List<GameObject>();
+    public AudioSource detectionSound;
+
+
+    [Header("Mutant Parameters")]
+    [SerializeField] public AudioSource[] mutantAttackSounds;
+    [SerializeField] public AudioSource[] mutantIdleSounds;
+    [SerializeField] public float idleSoundTime;
+    private float nextIdleSound = 0f;
+    private bool attackSoundPlaying = false;
 
     // Start is called before the first frame update
     void Start()
     {
+        instance = this;
+
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
         foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
@@ -61,15 +74,32 @@ public class EnemyFov : MonoBehaviour, IHearing
             if (Vector3.Distance(player.position, this.transform.position) < 7f)
             {
                 attack = true;
+                foreach (AudioSource attackSound in mutantAttackSounds)
+                {
+                    if (attackSound.isPlaying)
+                    {
+                        attackSoundPlaying = true;
+                        break;
+                    }
+                    else
+                    {
+                        attackSoundPlaying = false;
+                    }
+                }
+                if (attackSoundPlaying == false)
+                {
+                    mutantIdleSounds[Random.Range(0, mutantIdleSounds.Length)].Play();
+                }
             }
             else
             {
                 attack = false;
             }
-                
+
         }
         else if (heard)
         {
+            detectionSound.Play();
             agent.speed = 20;
             agent.SetDestination(soundposition);
             
@@ -124,6 +154,12 @@ public class EnemyFov : MonoBehaviour, IHearing
                     agent.SetDestination(patrolLocation);
                 }
             }
+        }
+
+        if (Random.Range(0, 10) > 5 && nextIdleSound < Time.time && attack == false)
+        {
+            mutantIdleSounds[Random.Range(0, mutantIdleSounds.Length)].Play();
+            nextIdleSound = idleSoundTime + Time.time;
         }
     }
 
@@ -224,4 +260,8 @@ public class EnemyFov : MonoBehaviour, IHearing
         }
     }
 
+    public bool getIsInFOV()
+    {
+        return isinFOV;
+    }
 }

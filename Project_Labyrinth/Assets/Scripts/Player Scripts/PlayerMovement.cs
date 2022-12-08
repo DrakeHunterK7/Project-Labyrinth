@@ -89,6 +89,8 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     [SerializeField] private AudioSource heartBeatSound;
     [SerializeField] private AudioSource breatheSound;
     [SerializeField] private AudioSource deathSound;
+    [SerializeField] public AudioSource levelMusic;
+    [SerializeField] public AudioSource chaseMusic;
 
     private Vector3 velocity = Vector3.zero;
 
@@ -359,6 +361,20 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         }
         
         CreateSound();
+
+        bool isInFOV = EnemyFov.instance.getIsInFOV();
+        float levelMusicVol = levelMusic.volume;
+        if (isInFOV == true)
+        {
+            chaseMusic.Play();
+            FadeOut(levelMusic);
+            FadeIn(chaseMusic, 0.4f);
+        }
+        else
+        {
+            FadeOut(chaseMusic);
+            FadeIn(levelMusic, levelMusicVol);
+        }
     }
 
     private void OnDrawGizmos()
@@ -661,5 +677,21 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     {
         Application.Quit();
     }
-    
+
+    public void FadeOut(AudioSource music)
+    {
+        float startVol = music.volume;
+        while (music.volume > 0)
+        {
+            music.volume -= startVol * Time.deltaTime / 0.5f;
+        }
+    }
+
+    public void FadeIn(AudioSource music, float targetVol)
+    {
+        while (music.volume < targetVol)
+        {
+            music.volume += targetVol * Time.deltaTime / 0.5f;
+        }
+    }
 }
