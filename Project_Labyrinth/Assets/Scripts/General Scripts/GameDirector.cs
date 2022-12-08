@@ -25,11 +25,7 @@ public class GameDirector : MonoBehaviour
         }
         DontDestroyOnLoad(this.gameObject);
     }
-    void Start()
-    {
-        
-    }
-    
+
     public void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -74,17 +70,13 @@ public class GameDirector : MonoBehaviour
             }
             else
             {
-                
+                SceneManager.LoadScene("Good Ending");
             }
         }
         else
         {
             SceneManager.LoadScene(levelNames[gameLevel]);
         }
-
-        
     }
-
- 
 }
 

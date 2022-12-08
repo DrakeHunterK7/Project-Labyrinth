@@ -1,14 +1,7 @@
-using System.Collections;
+
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using System;
-using Unity.VisualScripting;
-using ColorUtility = UnityEngine.ColorUtility;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using Inventory_System;
-using UnityEditor.VersionControl;
 
 public class InventoryManager : MonoBehaviour
 {

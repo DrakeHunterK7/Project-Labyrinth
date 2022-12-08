@@ -23,7 +23,6 @@ SOFTWARE.*/
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
-using UnityEditor.AI;
 using UnityEngine.SceneManagement;
 
 public class GenerateMap : MonoBehaviour
@@ -661,9 +660,6 @@ public class GenerateMap : MonoBehaviour
     // Function that resets all variables for each map generation
     void resetMap()
     {
-        // Removes the previously baked navmesh
-        NavMeshBuilder.ClearAllNavMeshes();
-
         startingRoomAdded = false;
         endingRoomAdded = false;
 
