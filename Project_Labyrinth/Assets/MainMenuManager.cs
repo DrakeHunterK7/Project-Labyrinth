@@ -14,6 +14,7 @@ public class MainMenuManager : MonoBehaviour
 
     public GameObject light1;
     public GameObject light2;
+    public GameObject controlMenu;
 
     public String firstLevelName;
 
@@ -157,6 +158,16 @@ public class MainMenuManager : MonoBehaviour
     public void StartGame()
     {
         SceneManager.LoadScene(firstLevelName);
+    }
+
+    public void showControls()
+    {
+        controlMenu.SetActive(true);
+    }
+
+    public void ExitControls()
+    {
+        controlMenu.SetActive(false);
     }
 
 
