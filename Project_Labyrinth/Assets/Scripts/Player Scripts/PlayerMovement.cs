@@ -701,21 +701,4 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     {
         Application.Quit();
     }
-
-    public void FadeOut(AudioSource music)
-    {
-        float startVol = music.volume;
-        while (music.volume > 0)
-        {
-            music.volume -= startVol * Time.deltaTime / 0.5f;
-        }
-    }
-
-    public void FadeIn(AudioSource music, float targetVol)
-    {
-        while (music.volume < targetVol)
-        {
-            music.volume += targetVol * Time.deltaTime / 0.5f;
-        }
-    }
 }

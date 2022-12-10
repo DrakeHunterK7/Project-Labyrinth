@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 public class EnemyFov : MonoBehaviour, IHearing
 {
@@ -28,6 +29,11 @@ public class EnemyFov : MonoBehaviour, IHearing
     private float nextIdleSound = 0f;
     private bool attackSoundPlaying = false;
 
+    private float chaseTimeOut = 0f;
+    private bool addedToChaseList = false;
+    private NavMeshPath agentPath;
+    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,12 +55,20 @@ public class EnemyFov : MonoBehaviour, IHearing
 
         if(isinFOV)
         {
+            chaseTimeOut = 10f;
             heard = false;
             patrolStopTime = 7f;
             checkingTime = 7f;
             seeTime = 3f;
             sawPlayer = true;
-            agent.speed = 20;
+            
+            if (!addedToChaseList)
+            {
+                GameDirector.instance.AddChaser();
+                addedToChaseList = true;
+            }
+            
+            agent.speed = 15;
             agent.SetDestination(player.position);
             if (Vector3.Distance(player.position, this.transform.position) < 7f)
             {
@@ -62,10 +76,7 @@ public class EnemyFov : MonoBehaviour, IHearing
             }
             else
             {
-                if (Vector3.Distance(player.position, this.transform.position) > maxradius)
-                {
-                    isinFOV = false;
-                }
+                attack = false;
             }
 
         }
@@ -99,6 +110,11 @@ public class EnemyFov : MonoBehaviour, IHearing
                 {
                     sawPlayer = false;
                     agent.speed = 10;
+                    if (addedToChaseList)
+                    {
+                        GameDirector.instance.RemoveChaser();
+                        addedToChaseList = false;
+                    }
                 
                 }
                 else
@@ -108,7 +124,9 @@ public class EnemyFov : MonoBehaviour, IHearing
             }
             else
             {
-                if (Vector3.Distance(patrolLocation, this.transform.position) < 10f)
+                if (chaseTimeOut > 0)
+                    chaseTimeOut -= Time.deltaTime;
+                if (Vector3.Distance(patrolLocation, this.transform.position) < 10f || !agent.CalculatePath(patrolLocation, new NavMeshPath()))
                 {
                     patrolStopTime -= Time.deltaTime;
 
@@ -134,7 +152,7 @@ public class EnemyFov : MonoBehaviour, IHearing
 
     public void HeardSound(Vector3 soundPosition)
     {
-        if (sawPlayer) return;
+        if (sawPlayer || chaseTimeOut > 0) return;
         if(!heard)
             MessageManager.instance.DisplayMessage("It heard you!", Color.red);
         soundposition = soundPosition;
@@ -160,7 +178,7 @@ public class EnemyFov : MonoBehaviour, IHearing
         else
             Gizmos.color = Color.green;
 
-        Gizmos.DrawRay(transform.position, (player.position - transform.position).normalized * maxradius);
+        Gizmos.DrawRay(transform.position+Vector3.up*agent.height/2, ((player.position+Vector3.up*agent.height/2) - (transform.position+Vector3.up*agent.height/2)).normalized * maxradius);
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawRay(transform.position, (patrolLocation - transform.position));
@@ -170,7 +188,7 @@ public class EnemyFov : MonoBehaviour, IHearing
     }
 
 
-    public static bool inFOV(Transform checkingObject, Transform target, float maxangle, float maxradius)
+    public bool inFOV(Transform checkingObject, Transform target, float maxangle, float maxradius)
     {
         Collider[] overlaps = new Collider[100];
         Physics.OverlapSphereNonAlloc(checkingObject.position, maxradius, overlaps);
@@ -187,19 +205,14 @@ public class EnemyFov : MonoBehaviour, IHearing
                     float angle = Vector3.Angle(checkingObject.forward, directionbetween);
                     if (angle <= maxangle)
                     {
-                        Ray ray = new Ray(checkingObject.position, target.position - checkingObject.position);
+                        Debug.Log("3");
+                        Ray ray = new Ray(checkingObject.position+Vector3.up*agent.height/2, (target.position+Vector3.up*agent.height/2) - (checkingObject.position+Vector3.up*agent.height/2));
                         RaycastHit hit;
 
                         if (Physics.Raycast(ray,out hit, maxradius))
                         {
+                            Debug.Log("4");
                             if (hit.collider.gameObject.CompareTag("Player"))
-                            {
-                                return true;
-                            }
-                        }
-                        else
-                        {
-                            if (Vector3.Distance(checkingObject.position, target.position) < 20f)
                             {
                                 return true;
                             }
@@ -213,7 +226,7 @@ public class EnemyFov : MonoBehaviour, IHearing
     void DamagePlayer()
     {
         var player = GameObject.FindWithTag("Player");
-        if (Vector3.Distance(player.transform.position, transform.position) < 10f)
+        if (Vector3.Distance(player.transform.position, transform.position) < 8f)
         {
             if (player.GetComponent<MonoBehaviour>() is IDamageable script)
             {

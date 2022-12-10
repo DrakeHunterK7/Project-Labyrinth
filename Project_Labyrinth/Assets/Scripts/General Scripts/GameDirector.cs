@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR;
 
 public class GameDirector : MonoBehaviour
 {
@@ -15,8 +16,12 @@ public class GameDirector : MonoBehaviour
     public bool isLoadingNextLevel = false;
     public bool isPlayerDead = false;
     public bool isDoctorDead = false;
-    
-    
+
+    public int playerChasers = 0;
+    public AudioSource levelMusic;
+    public AudioSource chaseMusic;
+
+
     private void Awake()
     {
         if (instance == null)
@@ -44,6 +49,7 @@ public class GameDirector : MonoBehaviour
         playerScript.fadeDirection = 1;
         playerScript.fadeTime = 0;
         MessageManager.instance.AddObjective("THE ESCAPE: Find a way to escape the lab", Color.yellow);
+        levelMusic = GameObject.FindWithTag("LevelMusic").GetComponent<AudioSource>();
     }
     
     void OnDisable()
@@ -81,6 +87,51 @@ public class GameDirector : MonoBehaviour
         else
         {
             SceneManager.LoadScene(levelNames[gameLevel]);
+        }
+    }
+
+    public void AddChaser()
+    {
+        playerChasers++;
+        HandleChaseMusic();
+    }
+
+    public void RemoveChaser()
+    {
+        playerChasers--;
+        HandleChaseMusic();
+    }
+
+
+    void HandleChaseMusic()
+    {
+        if (playerChasers == 0)
+        {
+            FadeOut(chaseMusic);
+            FadeIn(levelMusic, 0.7f);
+        }
+        else
+        {
+            FadeOut(levelMusic);
+            FadeIn(chaseMusic, 0.7f);
+        }
+    }
+    
+    
+    public void FadeOut(AudioSource music)
+    {
+        float startVol = music.volume;
+        while (music.volume > 0)
+        {
+            music.volume -= startVol * Time.deltaTime / 0.5f;
+        }
+    }
+
+    public void FadeIn(AudioSource music, float targetVol)
+    {
+        while (music.volume < targetVol)
+        {
+            music.volume += targetVol * Time.deltaTime / 0.5f;
         }
     }
 }

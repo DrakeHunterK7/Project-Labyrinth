@@ -9,7 +9,7 @@ public class Minion : MonoBehaviour, IHearing
     private int index = 0;
     public float maxangle;
     private float maxradius = 75f;
-    private bool isinFOV = false;
+    private bool isinFOV;
     private NavMeshAgent agent;
     public Animator animator;
     private bool attack = false;
@@ -62,9 +62,9 @@ public class Minion : MonoBehaviour, IHearing
                 done = true;
                 animator.Play("pounce");
                GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().smelly = true;
-                MessageManager.instance.DisplayMessage("You have been marked.", Color.red);
-                MessageManager.instance.DisplayMessage("It's coming. Run.", Color.red);
-                StartCoroutine("destroyminion");
+               MessageManager.instance.DisplayMessage("It's coming. Run.", Color.red);
+               MessageManager.instance.DisplayMessage("You have been marked.", Color.red);
+               StartCoroutine("destroyminion");
             }
 
         }
