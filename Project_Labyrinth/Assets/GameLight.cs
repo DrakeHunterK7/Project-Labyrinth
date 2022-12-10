@@ -24,7 +24,7 @@ public class GameLight : MonoBehaviour
         else
         {
             light1.enabled = false;
-            //lightModel.material = off;
+            lightModel.material = off;
         }
     }
     
@@ -37,12 +37,12 @@ public class GameLight : MonoBehaviour
             if (light1.enabled)
             {
                 light1.enabled = false;
-                //lightModel.material = off;
+                lightModel.material = off;
             }
             else
             {
                 light1.enabled = true;
-                //lightModel.material = on;
+                lightModel.material = on;
             }
         }
     }

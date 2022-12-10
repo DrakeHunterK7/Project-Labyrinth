@@ -33,6 +33,11 @@ public class GameDirector : MonoBehaviour
     
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (scene.name is "Main_Menu" or "Bad Ending" or "Good Ending" or "Neutral Ending")
+        {
+            Destroy(player);
+            Destroy(this.gameObject);
+        }
         isLoadingNextLevel = false;
         if(playerScript == null)
             playerScript = player.GetComponent<PlayerMovement>();

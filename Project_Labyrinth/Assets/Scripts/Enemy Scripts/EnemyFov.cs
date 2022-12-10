@@ -62,7 +62,7 @@ public class EnemyFov : MonoBehaviour, IHearing
             }
             else
             {
-                if (Vector3.Distance(player.position, this.transform.position) > maxradius + 10f)
+                if (Vector3.Distance(player.position, this.transform.position) > maxradius)
                 {
                     isinFOV = false;
                 }

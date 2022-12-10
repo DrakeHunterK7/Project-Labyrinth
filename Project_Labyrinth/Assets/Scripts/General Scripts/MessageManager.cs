@@ -60,16 +60,11 @@ public class MessageManager : MonoBehaviour
     
     public void UpdateObjective(String newMessage, String objectiveTitle)
     {
-        foreach (GameObject message in objectiveBox.transform)
+        foreach (Text message in objectiveBox.GetComponentsInChildren<Text>())
         {
-            var messageTextComponent = message.GetComponent<Text>();
-            
-            if (messageTextComponent == null)
-                continue;
-            
-            if (messageTextComponent.text.Contains("objectiveTitle"))
+            if (message.text.Contains(objectiveTitle))
             {
-                messageTextComponent.text = objectiveTitle + ": " + newMessage;
+                message.text = objectiveTitle + ": " + newMessage;
             }
         }
     }
