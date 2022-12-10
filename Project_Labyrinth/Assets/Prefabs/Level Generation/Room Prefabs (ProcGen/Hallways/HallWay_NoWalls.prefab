@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -2490403649034362192}
   - component: {fileID: -4869279637780946820}
   - component: {fileID: 5525980432832508254}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: HallWay_NoWalls
   m_TagString: Untagged
   m_Icon: {fileID: 0}

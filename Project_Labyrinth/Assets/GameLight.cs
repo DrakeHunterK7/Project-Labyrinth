@@ -12,12 +12,12 @@ public class GameLight : MonoBehaviour
     [SerializeField] private MeshRenderer lightModel;
     void Start()
     {
-        var x = Random.Range(1, 10);
-        if (x < 2)
+        var x = Random.Range(1, 11);
+        if (x < 3)
         {
             
         }
-        else if (x < 4)
+        else if (x < 7)
         {
             InvokeRepeating("FlickerLights", 0f, 0.1f);
         }

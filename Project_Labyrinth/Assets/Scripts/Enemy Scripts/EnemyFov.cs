@@ -4,8 +4,6 @@ using UnityEngine.AI;
 
 public class EnemyFov : MonoBehaviour, IHearing
 {
-    public static EnemyFov instance;
-
     public Transform player;
     private int index = 0;
     public float maxangle;
@@ -21,9 +19,7 @@ public class EnemyFov : MonoBehaviour, IHearing
     private float checkingTime = 7f;
     private float patrolStopTime = 7f;
     public Vector3 patrolLocation;
-    public List<GameObject> waypointlist = new List<GameObject>();
     public AudioSource detectionSound;
-
 
     [Header("Mutant Parameters")]
     [SerializeField] public AudioSource[] mutantAttackSounds;
@@ -35,20 +31,9 @@ public class EnemyFov : MonoBehaviour, IHearing
     // Start is called before the first frame update
     void Start()
     {
-        instance = this;
-
         animator = GetComponent<Animator>();
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
-        foreach (GameObject wp in GameObject.FindGameObjectsWithTag("Waypoint"))
-        {
-            waypointlist.Add(wp);
-        }
-
-        randomizeindex();
-
-        patrolLocation = waypointlist[index].transform.position;
-        //randomizeindex();
     }
     
 
@@ -108,13 +93,11 @@ public class EnemyFov : MonoBehaviour, IHearing
             
             if (Vector3.Distance(soundposition, this.transform.position) < 10f)
             {
-                Debug.Log("At soundpos");
                 checkingTime -= Time.deltaTime;
 
                 if (checkingTime <= 0f)
                 {
-                    randomizeindex();
-                    patrolLocation = waypointlist[index].transform.position;
+                    patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
                     agent.speed = 10;
                     heard = false;
                     checkingTime = 7f;
@@ -148,8 +131,7 @@ public class EnemyFov : MonoBehaviour, IHearing
                     if (patrolStopTime <= 0f)
                     {
                         patrolStopTime = 7f;
-                        randomizeindex();
-                        patrolLocation = waypointlist[index].transform.position;
+                        patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
                     }
                 }
                 else
@@ -230,7 +212,6 @@ public class EnemyFov : MonoBehaviour, IHearing
                             {
                                 return true;
                             }
-                                
                         }
                         else
                         {
@@ -245,12 +226,6 @@ public class EnemyFov : MonoBehaviour, IHearing
         }
         return false;
     }
-
-    private void randomizeindex()
-    {
-        index = Random.Range(0, waypointlist.Count - 1);
-    }
-
     void DamagePlayer()
     {
         var player = GameObject.FindWithTag("Player");
@@ -261,10 +236,5 @@ public class EnemyFov : MonoBehaviour, IHearing
                 script.Damage(10f);
             }
         }
-    }
-
-    public bool getIsInFOV()
-    {
-        return isinFOV;
     }
 }

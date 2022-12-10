@@ -47,6 +47,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     private bool isWalking;
     private bool isSprinting;
     private bool isCrouching;
+    public bool isSpotted = false;
 
     [HideInInspector]
     public bool smelly = false;
@@ -387,20 +388,6 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         }
         
         CreateSound();
-
-        bool isInFOV = EnemyFov.instance.getIsInFOV();
-        float levelMusicVol = levelMusic.volume;
-        if (isInFOV == true)
-        {
-            chaseMusic.Play();
-            FadeOut(levelMusic);
-            FadeIn(chaseMusic, 0.4f);
-        }
-        else
-        {
-            FadeOut(chaseMusic);
-            FadeIn(levelMusic, levelMusicVol);
-        }
     }
 
     private void OnDrawGizmos()
