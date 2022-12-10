@@ -13,34 +13,36 @@ public class GameLight : MonoBehaviour
     void Start()
     {
         var x = Random.Range(1, 11);
-        if (x < 3)
+        if (x < 2)
         {
             
         }
-        else if (x < 7)
+        else if (x < 4)
         {
             InvokeRepeating("FlickerLights", 0f, 0.1f);
         }
         else
         {
             light1.enabled = false;
-            lightModel.material = off;
+            //lightModel.material = off;
         }
     }
     
     void FlickerLights()
     {
+        if (Vector3.Distance(GameObject.FindWithTag("Player").transform.position, transform.position) > 300f) return;
+        
         if (Random.Range(1, 10f) < 2f)
         {
             if (light1.enabled)
             {
                 light1.enabled = false;
-                lightModel.material = off;
+                //lightModel.material = off;
             }
             else
             {
                 light1.enabled = true;
-                lightModel.material = on;
+                //lightModel.material = on;
             }
         }
     }

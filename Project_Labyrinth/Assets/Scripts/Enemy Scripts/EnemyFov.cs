@@ -59,22 +59,6 @@ public class EnemyFov : MonoBehaviour, IHearing
             if (Vector3.Distance(player.position, this.transform.position) < 7f)
             {
                 attack = true;
-                foreach (AudioSource attackSound in mutantAttackSounds)
-                {
-                    if (attackSound.isPlaying)
-                    {
-                        attackSoundPlaying = true;
-                        break;
-                    }
-                    else
-                    {
-                        attackSoundPlaying = false;
-                    }
-                }
-                if (attackSoundPlaying == false)
-                {
-                    mutantIdleSounds[Random.Range(0, mutantIdleSounds.Length)].Play();
-                }
             }
             else
             {
