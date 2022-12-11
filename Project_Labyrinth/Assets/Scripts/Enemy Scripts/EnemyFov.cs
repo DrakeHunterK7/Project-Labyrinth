@@ -22,6 +22,8 @@ public class EnemyFov : MonoBehaviour, IHearing
     public Vector3 patrolLocation;
     public AudioSource detectionSound;
 
+    private GameObject[] waypointList;
+
     [Header("Mutant Parameters")]
     [SerializeField] public AudioSource[] mutantAttackSounds;
     [SerializeField] public AudioSource[] mutantIdleSounds;
@@ -40,6 +42,7 @@ public class EnemyFov : MonoBehaviour, IHearing
         animator = GetComponent<Animator>();
         agent = transform.GetComponent<NavMeshAgent>();
         player = GameObject.FindWithTag("Player").transform;
+        waypointList = GameObject.FindGameObjectsWithTag("Waypoint");
     }
     
 
@@ -92,7 +95,7 @@ public class EnemyFov : MonoBehaviour, IHearing
 
                 if (checkingTime <= 0f)
                 {
-                    patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                    patrolLocation = waypointList[getRandomWaypointIndex()].transform.position;
                     agent.speed = 10;
                     heard = false;
                     checkingTime = 7f;
@@ -133,7 +136,7 @@ public class EnemyFov : MonoBehaviour, IHearing
                     if (patrolStopTime <= 0f)
                     {
                         patrolStopTime = 7f;
-                        patrolLocation = GameObject.FindWithTag("Waypoint").transform.position;
+                        patrolLocation = waypointList[getRandomWaypointIndex()].transform.position;
                     }
                 }
                 else
@@ -233,5 +236,10 @@ public class EnemyFov : MonoBehaviour, IHearing
                 script.Damage(10f);
             }
         }
+    }
+    
+    private int getRandomWaypointIndex()
+    {
+        return Random.Range(0, waypointList.Length);
     }
 }
