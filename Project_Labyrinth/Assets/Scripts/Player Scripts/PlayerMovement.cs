@@ -152,7 +152,13 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         if (exitPointer != null)
         {
             var exitPosition = mainCam.WorldToScreenPoint(exitPointer.transform.position);
-            exitIcon.position = exitPosition;
+            if(exitPosition.z >= 0) 
+                exitIcon.position = exitPosition;
+
+            exitIcon.position = new Vector3(Mathf.Clamp(exitIcon.position.x, 0, Screen.width), 
+                Mathf.Clamp(exitIcon.position.y, 0, Screen.height), 
+                exitIcon.position.z);
+            
         }
         else
         {
