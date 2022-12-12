@@ -35,6 +35,7 @@ public class Doctor : Interactable
     public override void Unlock()
     {
         killSwitchOn = true;
+        DoAction();
     }
 
     public override void DoAction()
@@ -47,7 +48,7 @@ public class Doctor : Interactable
         else
         {
             if (dead) return;
-            
+            MessageManager.instance.RemoveObjective("FINAL EXPERIMENT");
             GameDirector.instance.isDoctorDead = true;
             dead = true;
             DoctorDeathParticles.Play();

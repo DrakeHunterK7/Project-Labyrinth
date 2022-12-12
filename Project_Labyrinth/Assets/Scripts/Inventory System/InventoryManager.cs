@@ -40,7 +40,7 @@ public class InventoryManager : MonoBehaviour
             item.script = item.prefab.GetComponent<ItemController>();
             item.script.Item = item;
 
-            MessageManager.instance.DisplayMessage("Picked up " + item.name, Color.cyan); 
+            MessageManager.instance.DisplayMessage("Picked up " + item.itemName, Color.cyan); 
             return true;
         }
         else

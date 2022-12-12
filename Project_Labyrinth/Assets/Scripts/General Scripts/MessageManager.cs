@@ -68,6 +68,17 @@ public class MessageManager : MonoBehaviour
             }
         }
     }
+    
+    public void RemoveObjective(String objectiveTitle)
+    {
+        foreach (Text message in objectiveBox.GetComponentsInChildren<Text>())
+        {
+            if (message.text.Contains(objectiveTitle))
+            {
+                Destroy(message.gameObject);
+            }
+        }
+    }
 
     private bool ObjectiveAlreadyExists(String objectiveFull)
     {

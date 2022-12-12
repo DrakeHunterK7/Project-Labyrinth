@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EmptyBottle
   m_EditorClassIdentifier: 
   id: 0
-  itemName: EmptyBottle
+  itemName: Brick
   value: 10
   icon: {fileID: 21300000, guid: 3e717c1cb289a4201aa795074cc04464, type: 3}
   prefab: {fileID: 1216505430168376, guid: cd5a0e83e90ae9341a764e907fb244a3, type: 3}
@@ -21,4 +21,5 @@ MonoBehaviour:
   playerAttributeAffected: 0
   effectLength: 0
   effectDuration: 0
-  script: {fileID: 0}
+  script: {fileID: -3848801889690380091, guid: cd5a0e83e90ae9341a764e907fb244a3, type: 3}
+  useSound: {fileID: 0}

@@ -11,6 +11,8 @@ public class Pause_Menu : MonoBehaviour
     [SerializeField]
     GameObject HUDCanvas;
 
+    [SerializeField] private GameObject Controls;
+
     public static bool isPaused = false;
 
     void Start()
@@ -63,7 +65,8 @@ public class Pause_Menu : MonoBehaviour
 
     public void ControlsMenu()
     {
-
+        Controls.SetActive(!Controls.activeSelf);
+        pauseMenuPanel.SetActive(!Controls.activeSelf);
     }
 
     public void QuitGame()

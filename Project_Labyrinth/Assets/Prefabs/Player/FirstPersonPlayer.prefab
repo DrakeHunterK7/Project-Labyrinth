@@ -838,6 +838,7 @@ MonoBehaviour:
   fadeOverlay: {fileID: 4481962448355068764}
   deathOverlay: {fileID: 444704765642779254}
   deathBloodOverlay: {fileID: 0}
+  statusText: {fileID: 4368648565271848983}
   fadeTime: 0
   deathFadeTime: 0
   deathFadeTime1: 0
@@ -1464,7 +1465,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8031215060447464625}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.497}
+  m_LocalPosition: {x: 0, y: 0, z: 2.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1802,6 +1803,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2692828833026758833, guid: 349c35b298e33d84bbc1b3a3d5cbb6e7, type: 3}
   m_PrefabInstance: {fileID: 2083652008589103879}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4368648565271848983 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2326690639119907600, guid: 349c35b298e33d84bbc1b3a3d5cbb6e7, type: 3}
+  m_PrefabInstance: {fileID: 2083652008589103879}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4481962448355068764 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2511248754483632219, guid: 349c35b298e33d84bbc1b3a3d5cbb6e7, type: 3}

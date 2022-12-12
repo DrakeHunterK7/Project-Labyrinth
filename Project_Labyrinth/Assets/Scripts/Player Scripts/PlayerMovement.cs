@@ -103,6 +103,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
     [SerializeField] private UnityEngine.UI.Image fadeOverlay;
     [SerializeField] private UnityEngine.UI.Image deathOverlay;
     [SerializeField] private UnityEngine.UI.Image deathBloodOverlay;
+    [SerializeField] public TextMeshProUGUI statusText;
     private float overlayDisappearTime = 0f;
     public float fadeTime = 0f;
     public float deathFadeTime = 0f;
@@ -201,8 +202,11 @@ public class PlayerMovement : MonoBehaviour, IDamageable
         bloodOverlay.color = Color.Lerp(Color.clear, Color.white, overlayDisappearTime / 3f);
         
         if(fadeTime is >= 0 and <= 2)
+        {
             fadeTime += fadeDirection * Time.deltaTime;
-        fadeOverlay.color = Color.Lerp(Color.black, Color.clear, fadeTime / 2f);
+            fadeOverlay.color = Color.Lerp(Color.black, Color.clear, fadeTime / 2f);
+        }
+        
 
         playerCollider.center = controller.center;
         playerCollider.height = controller.height;
@@ -309,12 +313,12 @@ public class PlayerMovement : MonoBehaviour, IDamageable
             activeSpeed = crouchSpeed;
         else if (isWalking)
         {
-            soundRadius = 50f;
+            soundRadius = 35f;
             activeSpeed = walkSpeed; 
         }
         else if (isSprinting)
         {
-            soundRadius = 150f;
+            soundRadius = 100f;
             activeSpeed = sprintSpeed;
         }
             
@@ -497,6 +501,7 @@ public class PlayerMovement : MonoBehaviour, IDamageable
 
     void Death()
     {
+        statusText.text = "";
         GameDirector.instance.isPlayerDead = true;
         deathOverlay.gameObject.SetActive(true);
         walkSound.Stop();

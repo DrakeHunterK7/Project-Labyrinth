@@ -61,10 +61,12 @@ public class Minion : MonoBehaviour, IHearing
             {
                 done = true;
                 animator.Play("pounce");
-               GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().smelly = true;
-               MessageManager.instance.DisplayMessage("It's coming. Run.", Color.red);
-               MessageManager.instance.DisplayMessage("You have been marked.", Color.red);
-               StartCoroutine("destroyminion");
+                var player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+                player.smelly = true;
+                player.statusText.text = "MARKED";
+                MessageManager.instance.DisplayMessage("It's coming. Run.", Color.red);
+                MessageManager.instance.DisplayMessage("You have been marked.", Color.red);
+                StartCoroutine("destroyminion");
             }
 
         }
@@ -126,6 +128,8 @@ public class Minion : MonoBehaviour, IHearing
 
     public void HeardSound(Vector3 soundPosition)
     {
+        if (heard || sawPlayer) return;
+        MessageManager.instance.DisplayMessage("It heard you!", Color.red);
         soundposition = soundPosition;
         heard = true;
     }
@@ -205,6 +209,10 @@ public class Minion : MonoBehaviour, IHearing
     public IEnumerator destroyminion()
     {
         yield return new WaitForSeconds(1.25f);
+        foreach (Minion minion in GameObject.FindObjectsOfType<Minion>())
+        {
+            Destroy(minion.gameObject);
+        }
         Destroy(this.gameObject);
     }
 }

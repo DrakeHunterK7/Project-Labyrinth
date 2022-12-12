@@ -381,7 +381,7 @@ public class GenerateMap : MonoBehaviour
 
         if (spawnKillSwitch)
         {
-            var position = GameObject.FindWithTag("Waypoint").transform.position + 5 * Vector3.up;
+            var position = GameObject.FindObjectOfType<ItemSpawner>().gameObject.transform.position + 5 * Vector3.up;
             Instantiate(killSwitchPrefab, position, Quaternion.identity);
         }
     }
@@ -396,11 +396,8 @@ public class GenerateMap : MonoBehaviour
         _rooms.transform.localScale = new Vector3(worldScaleMultiplier, worldScaleMultiplier, worldScaleMultiplier);
 
         // This Bakes a new NavMesh after the map is created
-        foreach( NavMeshSurface surface in FindObjectsOfType<NavMeshSurface>())
-        {
-            surface.BuildNavMesh();
-            break;
-        }
+        FindObjectOfType<NavMeshSurface>().BuildNavMesh();
+        
         if(player != null)
             player.transform.position = GameObject.FindWithTag("PlayerStartPoint").transform.position + Vector3.up * 5f;
     }

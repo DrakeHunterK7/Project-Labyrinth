@@ -43,13 +43,16 @@ public class GameDirector : MonoBehaviour
             Destroy(player);
             Destroy(this.gameObject);
         }
-        isLoadingNextLevel = false;
-        if(playerScript == null)
-            playerScript = player.GetComponent<PlayerMovement>();
-        playerScript.fadeDirection = 1;
-        playerScript.fadeTime = 0;
-        MessageManager.instance.AddObjective("THE ESCAPE: Find a way to escape the lab", Color.yellow);
-        levelMusic = GameObject.FindWithTag("LevelMusic").GetComponent<AudioSource>();
+        else
+        {
+            isLoadingNextLevel = false;
+            if(playerScript == null)
+                playerScript = player.GetComponent<PlayerMovement>();
+            playerScript.fadeDirection = 1;
+            playerScript.fadeTime = 0;
+            MessageManager.instance.AddObjective("THE ESCAPE: Find a way to escape the lab", Color.yellow);
+            levelMusic = GameObject.FindWithTag("LevelMusic").GetComponent<AudioSource>();
+        }
     }
     
     void OnDisable()
@@ -64,6 +67,9 @@ public class GameDirector : MonoBehaviour
 
     public void NextLevel()
     {
+        levelMusic.Stop();
+        playerScript.statusText.text = "";
+        playerScript.smelly = false;
         playerScript.fadeDirection = -1;
         playerScript.fadeTime = 2;
         IncreaseLevel();
@@ -105,6 +111,8 @@ public class GameDirector : MonoBehaviour
 
     void HandleChaseMusic()
     {
+        if (isLoadingNextLevel) return;
+        
         if (playerChasers == 0)
         {
             FadeOut(chaseMusic);
