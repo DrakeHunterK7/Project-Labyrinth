@@ -400,7 +400,7 @@ public class GenerateMap : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         
         if(player != null)
-            player.transform.position = GameObject.FindWithTag("PlayerStartPoint").transform.position + Vector3.up * 5f;
+            player.transform.position = GameObject.FindWithTag("PlayerStartPoint").transform.position + Vector3.up * 8f;
     }
 
     // Adds room to list of rooms and then spawns room in world space
