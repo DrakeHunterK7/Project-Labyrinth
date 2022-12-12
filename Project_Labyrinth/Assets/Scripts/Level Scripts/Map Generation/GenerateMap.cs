@@ -129,7 +129,6 @@ public class GenerateMap : MonoBehaviour
     void Start()
     {
         
-        player = GameObject.FindWithTag("Player");
         CreateMap();
     }
 
@@ -397,6 +396,8 @@ public class GenerateMap : MonoBehaviour
 
         // This Bakes a new NavMesh after the map is created
         FindObjectOfType<NavMeshSurface>().BuildNavMesh();
+        
+        player = GameObject.FindWithTag("Player");
         
         if(player != null)
             player.transform.position = GameObject.FindWithTag("PlayerStartPoint").transform.position + Vector3.up * 5f;
